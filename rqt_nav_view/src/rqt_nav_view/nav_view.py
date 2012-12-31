@@ -130,10 +130,10 @@ class NavView(QGraphicsView):
             a = numpy.append(a, e, axis=1)
         image = QImage(a.reshape((a.shape[0] * a.shape[1])), self.w, self.h, QImage.Format_Indexed8)
 
-        for i in range(101):
-            image.setColor(i, qRgb(i * 2.55, i * 2.55, i * 2.55))
+        for i in reversed(range(101)):
+            image.setColor(100 - i, qRgb(i* 2.55, i * 2.55, i * 2.55))
         image.setColor(101, qRgb(255, 0, 0))  # not used indices
-        image.setColor(255, qRgb(0, 0, 150))  # color for unknown value -1
+        image.setColor(255, qRgb(200, 200, 200))  # color for unknown value -1
         self._map = image
         self.setSceneRect(0, 0, self.w, self.h)
         self.map_changed.emit()
