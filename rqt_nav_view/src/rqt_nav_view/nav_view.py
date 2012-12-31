@@ -39,8 +39,19 @@ import random
 from nav_msgs.msg import OccupancyGrid, Path
 from geometry_msgs.msg import PolygonStamped, PointStamped
 
-from python_qt_binding.QtCore import Signal, QPointF
+from python_qt_binding.QtCore import Signal, Slot, QPointF, qWarning, Qt
 from python_qt_binding.QtGui import QWidget, QPixmap, QImage, QGraphicsView, QGraphicsScene, QPainterPath, QPen, QPolygonF, QVBoxLayout, QColor, qRgb
+
+from rqt_py_common.topic_helpers import get_field_type
+
+def accepted_topic(topic):
+    msg_types = [OccupancyGrid, Path, PolygonStamped, PointStamped]
+    msg_type, array = get_field_type(topic)
+
+    if not array and msg_type in msg_types:
+        return True
+    else:
+        return False
 
 
 class PathInfo(object):
@@ -62,12 +73,57 @@ class NavViewWidget(QWidget):
         super(NavViewWidget, self).__init__()
         self._layout = QVBoxLayout()
 
+        self.setAcceptDrops(True)
+
         self.setWindowTitle('Navigation Viewer')
+
+        self.paths = paths
+        self.polygons = polygons
+        self.map = map_topic
+
         self._nav_view = NavView(map_topic, paths, polygons)
         self._layout.addWidget(self._nav_view)
 
         self.setLayout(self._layout)
 
+    def dragEnterEvent(self, e):
+        if not e.mimeData().hasText():
+            if not hasattr(e.source(), 'selectedItems') or len(e.source().selectedItems()) == 0:
+                qWarning('NavView.dragEnterEvent(): not hasattr(event.source(), selectedItems) or len(event.source().selectedItems()) == 0')
+                return
+            item = e.source().selectedItems()[0]
+            topic_name = item.data(0, Qt.UserRole)
+            if topic_name == None:
+                qWarning('NavView.dragEnterEvent(): not hasattr(item, ros_topic_name_)')
+                return
+
+        else:
+            topic_name = str(e.mimeData().text())
+
+        if accepted_topic(topic_name):
+            e.accept()
+            e.acceptProposedAction()
+
+    def dropEvent(self, e):
+        if e.mimeData().hasText():
+            topic_name = str(e.mimeData().text())
+        else:
+            droped_item = e.source().selectedItems()[0]
+            topic_name = str(droped_item.data(0, Qt.UserRole))
+
+        topic_type, array = get_field_type(topic_name)
+        if not array:
+            if topic_type is OccupancyGrid:
+                self.map = topic_name
+            elif topic_type is Path:
+                self.paths.append(topic_name)
+            elif topic_type is PolygonStamped:
+                self.paths.append(topic_name)
+
+            # Swap out the nav view for one with the new topics
+            self._nav_view.close()
+            self._nav_view = NavView(self.map, self.paths, self.polygons)
+            self._layout.addWidget(self._nav_view)
 
 class NavView(QGraphicsView):
     map_changed = Signal()
@@ -224,6 +280,8 @@ class NavView(QGraphicsView):
         for p in self._polygons.itervalues():
             if p.sub:
                 p.sub.unregister()
+
+        super(NavView, self).close()
 
     def _update(self):
         if self._map_item:
