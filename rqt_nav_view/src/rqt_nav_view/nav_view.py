@@ -81,7 +81,9 @@ class NavViewWidget(QWidget):
         self.polygons = polygons
         self.map = map_topic
 
-        self._nav_view = NavView(map_topic, paths, polygons)
+        self._tf = tf.TransformListener()
+
+        self._nav_view = NavView(map_topic, paths, polygons, tf = self._tf)
         self._layout.addWidget(self._nav_view)
 
         self.setLayout(self._layout)
@@ -122,7 +124,7 @@ class NavViewWidget(QWidget):
 
             # Swap out the nav view for one with the new topics
             self._nav_view.close()
-            self._nav_view = NavView(self.map, self.paths, self.polygons)
+            self._nav_view = NavView(self.map, self.paths, self.polygons, self._tf)
             self._layout.addWidget(self._nav_view)
 
 class NavView(QGraphicsView):
@@ -132,7 +134,7 @@ class NavView(QGraphicsView):
 
     def __init__(self, map_topic='/map',
                  paths=['/move_base/SBPLLatticePlanner/plan', '/move_base/TrajectoryPlannerROS/local_plan'],
-                 polygons=['/move_base/local_costmap/robot_footprint']):
+                 polygons=['/move_base/local_costmap/robot_footprint'], tf=None):
         super(NavView, self).__init__()
 
         self.map_changed.connect(self._update)
@@ -156,7 +158,10 @@ class NavView(QGraphicsView):
 
         self._scene = QGraphicsScene()
 
-        self._tf = tf.TransformListener()
+        if tf is None:
+            self._tf = tf.TransformListener()
+        else:
+            self._tf = tf
         self.map_sub = rospy.Subscriber('/map', OccupancyGrid, self.map_cb)
 
         for path in paths:
