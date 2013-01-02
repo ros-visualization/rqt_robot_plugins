@@ -206,6 +206,9 @@ class NavView(QGraphicsView):
         path = PathInfo(name)
 
         def c(msg):
+            if not self._map:
+                return
+
             pp = QPainterPath()
 
             # Transform everything in to the map frame
@@ -242,6 +245,9 @@ class NavView(QGraphicsView):
         poly = PathInfo(name)
 
         def c(msg):
+            if not self._map:
+                return
+
             if not (msg.header.frame_id == '/map' or msg.header.frame_id == ''):
                 try:
                     self._tf.waitForTransform(msg.header.frame_id, '/map', rospy.Time(), rospy.Duration(10))
