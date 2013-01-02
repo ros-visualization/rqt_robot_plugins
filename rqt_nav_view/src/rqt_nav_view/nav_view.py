@@ -117,15 +117,18 @@ class NavViewWidget(QWidget):
         if not array:
             if topic_type is OccupancyGrid:
                 self.map = topic_name
+
+                # Swap out the nav view for one with the new topics
+                self._nav_view.close()
+                self._nav_view = NavView(self.map, self.paths, self.polygons, self._tf)
+                self._layout.addWidget(self._nav_view)
             elif topic_type is Path:
                 self.paths.append(topic_name)
+                self._nav_view.add_path(topic_name)
             elif topic_type is PolygonStamped:
-                self.paths.append(topic_name)
+                self.polygons.append(topic_name)
+                self._nav_view.add_polygon(topic_name)
 
-            # Swap out the nav view for one with the new topics
-            self._nav_view.close()
-            self._nav_view = NavView(self.map, self.paths, self.polygons, self._tf)
-            self._layout.addWidget(self._nav_view)
 
 class NavView(QGraphicsView):
     map_changed = Signal()
