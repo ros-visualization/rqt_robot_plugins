@@ -84,7 +84,7 @@ class NavViewWidget(QWidget):
         self.map = map_topic
         self._tf = tf.TransformListener()
 
-        self._nav_view = NavView(map_topic, paths, polygons, tf = self._tf)
+        self._nav_view = NavView(map_topic, paths, polygons, tf = self._tf, parent = self)
 
         self._set_pose = QPushButton('Set Pose')
         self._set_pose.clicked.connect(self._nav_view.pose_mode)
@@ -132,7 +132,7 @@ class NavViewWidget(QWidget):
 
                 # Swap out the nav view for one with the new topics
                 self._nav_view.close()
-                self._nav_view = NavView(self.map, self.paths, self.polygons, self._tf)
+                self._nav_view = NavView(self.map, self.paths, self.polygons, self._tf, self)
                 self._layout.addWidget(self._nav_view)
             elif topic_type is Path:
                 self.paths.append(topic_name)
@@ -149,11 +149,14 @@ class NavView(QGraphicsView):
 
     def __init__(self, map_topic='/map',
                  paths=['/move_base/SBPLLatticePlanner/plan', '/move_base/TrajectoryPlannerROS/local_plan'],
-                 polygons=['/move_base/local_costmap/robot_footprint'], tf=None):
+                 polygons=['/move_base/local_costmap/robot_footprint'], tf=None, parent=None):
         super(NavView, self).__init__()
+        self._parent = parent
+
         self._pose_mode = False
         self._goal_mode = False
         self.last_path = None
+
 
         self.map_changed.connect(self._update)
         self.destroyed.connect(self.close)
@@ -191,6 +194,26 @@ class NavView(QGraphicsView):
         self._pose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
 
         self.setScene(self._scene)
+
+    def add_dragdrop(self, item):
+        # Add drag and drop functionality to all the items in the view
+        def c(x, e):
+            print("Scene drag")
+            self.dragEnterEvent(e)
+        def d(x, e):
+            print("Scene drop")
+            self.dropEvent(e)
+        item.setAcceptDrops(True)
+        item.dragEnterEvent = c
+        item.dropEvent = d 
+
+    def dragEnterEvent(self, e):
+        if self._parent:
+            self._parent.dragEnterEvent(e)
+
+    def dropEvent(self, e):
+        if self._parent:
+            self._parent.dropEvent(e)
 
     def wheelEvent(self, event):
         event.ignore()
@@ -377,6 +400,9 @@ class NavView(QGraphicsView):
 
         # Everything must be mirrored
         self._mirror(self._map_item)
+
+        # Add drag and drop functionality 
+        self.add_dragdrop(self._map_item)
 
         self.centerOn(self._map_item)
         self.show()
