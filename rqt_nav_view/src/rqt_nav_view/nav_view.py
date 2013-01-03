@@ -39,7 +39,7 @@ import random
 from math import sqrt, atan, pi, degrees
 
 from nav_msgs.msg import OccupancyGrid, Path
-from geometry_msgs.msg import PolygonStamped, PointStamped, PoseWithCovarianceStamped
+from geometry_msgs.msg import PolygonStamped, PointStamped, PoseWithCovarianceStamped, PoseStamped
 
 from python_qt_binding.QtCore import Signal, Slot, QPointF, qWarning, Qt
 from python_qt_binding.QtGui import QWidget, QPixmap, QImage, QGraphicsView, QGraphicsScene, QPainterPath, QPen, QPolygonF, QVBoxLayout, QHBoxLayout, QColor, qRgb, QPushButton
@@ -192,20 +192,19 @@ class NavView(QGraphicsView):
             self.add_polygon(poly)
 
         self._pose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
+        self._goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped)
 
         self.setScene(self._scene)
 
     def add_dragdrop(self, item):
         # Add drag and drop functionality to all the items in the view
         def c(x, e):
-            print("Scene drag")
             self.dragEnterEvent(e)
         def d(x, e):
-            print("Scene drop")
             self.dropEvent(e)
         item.setAcceptDrops(True)
         item.dragEnterEvent = c
-        item.dropEvent = d 
+        item.dropEvent = d
 
     def dragEnterEvent(self, e):
         if self._parent:
@@ -327,44 +326,73 @@ class NavView(QGraphicsView):
     def pose_mode(self):
         if not self._pose_mode:
             self._pose_mode = True
+            self._goal_mode = False
             self.setDragMode(QGraphicsView.NoDrag)
         elif self._pose_mode:
             self._pose_mode = False
             self.setDragMode(QGraphicsView.ScrollHandDrag)
 
     def goal_mode(self):
-        pass
+        if not self._goal_mode:
+            self._goal_mode = True
+            self._pose_mode = False
+            self.setDragMode(QGraphicsView.NoDrag)
+        elif self._goal_mode:
+            self._goal_mode = False
+            self.setDragMode(QGraphicsView.ScrollHandDrag)
 
-    def mousePressEvent(self, e):
+    def draw_position(self, e, mirror=True):
         p = self.mapToScene(e.x(), e.y())
-        self.drag_start = (p.x(), p.y())
+        v = (p.x() - self.drag_start[0], p.y() - self.drag_start[1])
+        mag = sqrt(pow(v[0], 2) + pow(v[1], 2))
+        u = (v[0]/mag, v[1]/mag)
 
-    def mouseReleaseEvent(self, e):
+        res = (u[0]*20, u[1]*20)
+        path = self._scene.addLine(self.drag_start[0], self.drag_start[1],
+                                   self.drag_start[0] + res[0], self.drag_start[1] + res[1])
+
         if self.last_path:
             self._scene.removeItem(self.last_path)
+            self.last_path = None
+        self.last_path = path
 
-    def mouseMoveEvent(self, e):
-        if e.buttons() == Qt.LeftButton and (self._pose_mode or self._goal_mode):
-            p = self.mapToScene(e.x(), e.y())
-            v = (p.x() - self.drag_start[0], p.y() - self.drag_start[1])
-            mag = sqrt(pow(v[0], 2) + pow(v[1], 2))
-            u = (v[0]/mag, v[1]/mag)
-
-            res = (u[0]*20, u[1]*20)
-            path = self._scene.addLine(self.drag_start[0], self.drag_start[1], 
-                                       self.drag_start[0] + res[0], self.drag_start[1] + res[1])
-
-            if self.last_path:
-                self._scene.removeItem(self.last_path)
-            self.last_path = path
-            
+        if mirror:
             # Mirror point over x axis
             x = ((self.w / 2) - self.drag_start[0]) + (self.w /2)
+        else:
+            x = self.drag_start[0]
 
-            map_p = [x * self.resolution, self.drag_start[1] * self.resolution]
-            
-            angle = atan(u[1] / u[0])
-            quat = quaternion_from_euler(0, 0, degrees(angle))
+        map_p = [x * self.resolution, self.drag_start[1] * self.resolution]
+
+        angle = atan(u[1] / u[0])
+        quat = quaternion_from_euler(0, 0, degrees(angle))
+
+        return map_p, quat
+
+    def mousePressEvent(self, e):
+        if self._goal_mode or self._pose_mode:
+            p = self.mapToScene(e.x(), e.y())
+            self.drag_start = (p.x(), p.y())
+
+    def mouseReleaseEvent(self, e):
+        if self._goal_mode:
+            self._goal_mode = False
+            map_p, quat = self.draw_position(e)
+
+            msg = PoseStamped()
+            msg.header.frame_id = '/map'
+            msg.header.stamp = rospy.Time.now()
+
+            msg.pose.position.x = map_p[0]
+            msg.pose.position.y = map_p[1]
+            msg.pose.orientation.w = quat[0]
+            msg.pose.orientation.z = quat[3]
+
+            self._goal_pub.publish(msg)
+
+        elif self._pose_mode:
+            self._pose_mode = False
+            map_p, quat = self.draw_position(e)
 
             msg = PoseWithCovarianceStamped()
             msg.header.frame_id = '/map'
@@ -377,6 +405,15 @@ class NavView(QGraphicsView):
             msg.pose.pose.position.y = map_p[1]
 
             self._pose_pub.publish(msg)
+
+        # Clean up the path
+        if self.last_path:
+            self._scene.removeItem(self.last_path)
+            self.last_path = None
+
+    def mouseMoveEvent(self, e):
+        if e.buttons() == Qt.LeftButton and (self._pose_mode or self._goal_mode):
+            map_p, quat = self.draw_position(e)
 
     def close(self):
         if self.map_sub:
@@ -401,7 +438,7 @@ class NavView(QGraphicsView):
         # Everything must be mirrored
         self._mirror(self._map_item)
 
-        # Add drag and drop functionality 
+        # Add drag and drop functionality
         self.add_dragdrop(self._map_item)
 
         self.centerOn(self._map_item)
