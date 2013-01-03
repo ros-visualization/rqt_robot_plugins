@@ -70,7 +70,7 @@ class PathInfo(object):
 class NavViewWidget(QWidget):
 
     def __init__(self, map_topic='/map',
-                 paths=['/move_base/SBPLLatticePlanner/plan', '/move_base/TrajectoryPlannerROS/local_plan'],
+                 paths=['/move_base/NavFn/plan', '/move_base/TrajectoryPlannerROS/local_plan'],
                  polygons=['/move_base/local_costmap/robot_footprint']):
         super(NavViewWidget, self).__init__()
         self._layout = QVBoxLayout()
