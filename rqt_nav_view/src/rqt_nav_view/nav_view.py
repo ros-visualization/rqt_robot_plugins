@@ -373,6 +373,8 @@ class NavView(QGraphicsView):
         if self._goal_mode or self._pose_mode:
             p = self.mapToScene(e.x(), e.y())
             self.drag_start = (p.x(), p.y())
+        else:
+            super(NavView, self).mousePressEvent(e)
 
     def mouseReleaseEvent(self, e):
         if self._goal_mode:
@@ -411,9 +413,9 @@ class NavView(QGraphicsView):
             self._scene.removeItem(self.last_path)
             self.last_path = None
 
-    def mouseMoveEvent(self, e):
-        if e.buttons() == Qt.LeftButton and (self._pose_mode or self._goal_mode):
-            map_p, quat = self.draw_position(e)
+    #def mouseMoveEvent(self, e):
+    #    if e.buttons() == Qt.LeftButton and (self._pose_mode or self._goal_mode):
+    #        map_p, quat = self.draw_position(e)
 
     def close(self):
         if self.map_sub:
