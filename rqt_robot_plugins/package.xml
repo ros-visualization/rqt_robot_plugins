@@ -1,6 +1,6 @@
 <package>
   <name>rqt_robot_plugins</name>
-  <version>0.2.7</version>
+  <version>0.2.8</version>
   <description>Metapackage of rqt plugins for use with robots.</description>
   <maintainer email="ablasdel@willowgarage.com">Aaron Blasdel</maintainer>
 
