@@ -475,3 +475,11 @@ class NavView(QGraphicsView):
     def _mirror(self, item):
         item.scale(-1, 1)
         item.translate(-self.w, 0)
+
+    def save_settings(self, plugin_settings, instance_settings):
+        # TODO add any settings to be saved
+        pass
+
+    def restore_settings(self, plugin_settings, instance_settings):
+        # TODO add any settings to be restored
+        pass
