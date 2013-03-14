@@ -3,6 +3,7 @@
   <version>0.2.9</version>
   <description>rqt_nav_view provides a gui for viewing navigation maps and paths.</description>
   <maintainer email="zklapow@willowgarage.com">Ze'ev Klapow</maintainer>
+  <maintainer email="isao.saito@mavs.uta.edu">Isaac Saito</maintainer>
 
   <license>BSD</license>
 
