@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>MainWindow</class>
+ <widget class="QWidget" name="MainWindow">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>802</width>
+    <height>593</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Google Maps Browser</string>
+  </property>
+  <widget class="QWidget" name="centralWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>801</width>
+     <height>551</height>
+    </rect>
+   </property>
+   <widget class="QWidget" name="horizontalLayoutWidget">
+    <property name="geometry">
+     <rect>
+      <x>0</x>
+      <y>20</y>
+      <width>791</width>
+      <height>511</height>
+     </rect>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <item>
+      <widget class="QWebView" name="_webview">
+       <property name="url">
+        <url>
+         <string>http://www.openstreetmap.org/</string>
+        </url>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </widget>
+  </widget>
+  <action name="actionQuit">
+   <property name="text">
+    <string>Quit</string>
+   </property>
+  </action>
+  <action name="actionMoscow">
+   <property name="text">
+    <string>Moscow</string>
+   </property>
+  </action>
+  <action name="actionNewYork">
+   <property name="text">
+    <string>New York</string>
+   </property>
+  </action>
+  <action name="actionLondon">
+   <property name="text">
+    <string>London</string>
+   </property>
+  </action>
+  <action name="actionSanJose_CA">
+   <property name="text">
+    <string>San Jose CA</string>
+   </property>
+  </action>
+  <action name="actionBedford_MA">
+   <property name="text">
+    <string>Bedford MA</string>
+   </property>
+  </action>
+  <action name="actionSky">
+   <property name="text">
+    <string>Sky</string>
+   </property>
+  </action>
+  <action name="actionBorders">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Borders and Names</string>
+   </property>
+  </action>
+  <action name="actionRoads">
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+   <property name="text">
+    <string>Roads</string>
+   </property>
+  </action>
+ </widget>
+ <layoutdefault spacing="6" margin="11"/>
+ <customwidgets>
+  <customwidget>
+   <class>QWebView</class>
+   <extends>QWidget</extends>
+   <header>QtWebKit/QWebView</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>

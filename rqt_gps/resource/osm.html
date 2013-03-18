@@ -1,0 +1,53 @@
+<html>
+<head>
+<script type="text/javascript" src="http://www.openlayers.org/api/OpenLayers.js"></script>
+<script type="text/javascript">
+    var map = null;
+    var longit_osrf = -122.0795;
+    var lat_osrf = 37.400;
+    function init() {
+        map = new OpenLayers.Map("canvas");
+        var mapnik = new OpenLayers.Layer.OSM();
+        map.addLayer(mapnik);
+         
+        var lonLat = new OpenLayers.LonLat(-122.076, 37.40)
+            .transform(
+                new OpenLayers.Projection("EPSG:4326"),
+                new OpenLayers.Projection("EPSG:900913")
+            );
+        map.setCenter(lonLat, 15);
+        
+        //add_marker();
+        test_add_markers();
+    }
+ 
+    function test_add_markers(){
+        base_longit = longit_osrf;
+        base_lat = lat_osrf;
+        for (var i=0; i<3; i++){
+             add_marker(base_longit, base_lat);
+             base_longit = base_longit + 0.001;
+             //base_lat = base_lat + 0.0001;
+        }
+    }
+
+    function add_marker(longit, lat){
+        longit = typeof longit !== 'undefined' ? longit : longit_osrf
+        lat = typeof lat !== 'undefined' ? lat : lat_osrf
+        var markers = new OpenLayers.Layer.Markers("Markers");
+        map.addLayer(markers);
+        var marker = new OpenLayers.Marker(
+            new OpenLayers.LonLat(longit, lat)
+                .transform(
+                    new OpenLayers.Projection("EPSG:4326"),
+                    new OpenLayers.Projection("EPSG:900913")
+                )
+        );
+        markers.addMarker(marker);
+    }
+
+</script>
+</head>
+<body onload="init();">
+    <div id="canvas" style="width:500px; height:400px"></div>
+</body></html>

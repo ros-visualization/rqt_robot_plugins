@@ -1,0 +1,12 @@
+<library path="src">
+  <class name="GPS Viewer and Nav" type="rqt_gps.gps_plugin.GpsPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+    GPS plot viewer
+    </description>
+    <qtgui>
+	<label>GPS View and Nav</label>
+        <icon type="theme">utilities-system-monitor</icon>
+	<statustip>/statustip_test_need_modified</statustip>
+    </qtgui>
+  </class>
+</library>
