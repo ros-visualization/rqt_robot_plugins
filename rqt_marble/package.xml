@@ -25,6 +25,7 @@
 
   <!-- <rosdep name="libmarble-dev" /> -->
   <buildtool_depend>catkin</buildtool_depend>
+  <build_depend>libmarble-dev</build_depend>
   <build_depend>message_generation</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_cpp</build_depend>
