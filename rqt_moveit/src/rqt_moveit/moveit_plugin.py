@@ -49,26 +49,26 @@ class MoveitPlugin(Plugin):
         self._plugin_context = plugin_context
 
         self._moveit_widget = MoveitWidget(self, plugin_context)
-        self._mainwidget = PluginContainerWidget(self._moveit_widget,
+        self.mainwidget = PluginContainerWidget(self._moveit_widget,
                                                  True, False)
 
         if self._plugin_context.serial_number() > 1:
-            self._mainwidget.setWindowTitle(self._mainwidget.windowTitle() +
+            self.mainwidget.setWindowTitle(self.mainwidget.windowTitle() +
                                    (' (%d)' % plugin_context.serial_number()))
 
-        plugin_context.add_widget(self._mainwidget)
+        plugin_context.add_widget(self.mainwidget)
 
     def get_widget(self):
-        return self._mainwidget
+        return self.mainwidget
 
     def shutdown_plugin(self):
-        self._mainwidget.shutdown()
+        self.mainwidget.shutdown()
 
     def save_settings(self, plugin_settings, instance_settings):
-        self._mainwidget.save_settings(plugin_settings, instance_settings)
+        self.mainwidget.save_settings(plugin_settings, instance_settings)
 
     def restore_settings(self, plugin_settings, instance_settings):
-        self._mainwidget.restore_settings(plugin_settings, instance_settings)
+        self.mainwidget.restore_settings(plugin_settings, instance_settings)
 
     def _update_msg(self):
         """

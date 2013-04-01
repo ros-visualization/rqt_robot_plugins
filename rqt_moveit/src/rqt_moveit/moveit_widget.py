@@ -51,7 +51,7 @@ class MoveitWidget(QWidget):
     """
 
     # To be connected to PluginContainerWidget
-    sig_sysmsg = Signal(str)
+    sig_sysmsg = None
 
     def __init__(self, parent, plugin_context):
         """
@@ -73,6 +73,11 @@ class MoveitWidget(QWidget):
                                  ('/camera_info', 'sensor_msgs/CameraInfo')]
         self._widget_topic.set_selected_topics(self._selected_topics)
         self._widget_topic.start()
+        # To connect signal in a widget to PluginContainerWidget.
+        #TODO: In this way, Signal from only one instance is hooked. 
+        # Not a good design at all.
+        self.sig_sysmsg = self._widget_topic.sig_sysmsg
+
         #TODO: Indicate on sys msg pane if capturing these topics fails.
         # That might be because those topics are not published
 
@@ -92,64 +97,6 @@ class MoveitWidget(QWidget):
     def shutdown(self):
         # TODO: impl
         pass
-
-#    def _init_topic_table(self):
-#        # name_topic_pointcloud = '/wide_stereo/points'
-#        # name_topic_pointcloud2 = '/wide_stereo/points2'
-#
-#        row = 0
-#        for name_topic in self._name_topics:
-#            # Create widget for topic.
-#            _qitem = ReadonlyItem(name_topic)
-#            self._datamodel.setItem(row, 0, _qitem)
-#
-#            # Create subscriber
-#            topic_info = TopicInfo(name_topic)
-#            self._topic_obj_dict[name_topic] = topic_info
-#
-#            row += 1
-#
-#    def _update_topics_data(self):
-#        """
-#        Originally copied from rqt_topic.topic_widget._update_topics_data
-#        """
-#        for topic in self._topic_obj_dict.values():
-#            topic_info = topic['info']
-#            if topic_info.monitoring:
-#                # update rate
-#                rate, _, _, _ = topic_info.get_hz()
-#                rate_text = '%1.2f' % rate if rate != None else 'unknown'
-#
-#                # update bandwidth
-#                bytes_per_s, _, _, _ = topic_info.get_bw()
-#                if bytes_per_s is None:
-#                    bandwidth_text = 'unknown'
-#                elif bytes_per_s < 1000:
-#                    bandwidth_text = '%.2fB/s' % bytes_per_s
-#                elif bytes_per_s < 1000000:
-#                    bandwidth_text = '%.2fKB/s' % (bytes_per_s / 1000.)
-#                else:
-#                    bandwidth_text = '%.2fMB/s' % (bytes_per_s / 1000000.)
-#
-#                # update values
-#                value_text = ''
-#                self.update_value(topic_info._topic_name,
-#                                  topic_info.last_message)
-#
-#            else:
-#                rate_text = ''
-#                bandwidth_text = ''
-#                value_text = 'not monitored'
-#
-#            self._topic_obj_dict[topic_info._topic_name].setText(
-#                                         self._column_index['rate'], rate_text)
-#            self._topic_obj_dict[topic_info._topic_name].setText(
-#                               self._column_index['bandwidth'], bandwidth_text)
-#            self._topic_obj_dict[topic_info._topic_name].setText(
-#                                       self._column_index['value'], value_text)
-#
-#    def update_topic_table(self):
-#        self._update_topics_data()
 
 
 if __name__ == '__main__':
