@@ -34,16 +34,43 @@
 
 import os
 import sys
+import threading
 
+from dynamic_reconfigure.client import Client as DynrecClient
 from python_qt_binding import loadUi
-from python_qt_binding.QtCore import QModelIndex, Signal
+from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
 from python_qt_binding.QtGui import QStandardItem, QStandardItemModel, QWidget
 from rqt_py_common.data_items import ReadonlyItem
-
 import rospkg
 import rospy
 from rostopic import get_topic_class, ROSTopicHz
+from rqt_reconfigure.dynreconf_client_widget import DynreconfClientWidget
 from rqt_topic import topic_info, topic_widget
+
+
+class ParamCheckThread(threading.Thread):
+    def __init__(self, parent, signal_tobe_emitted, params_monitored):
+        super(ParamCheckThread, self).__init__()
+        self._parent = parent
+        self._signal = signal_tobe_emitted
+        self._params_monitored = params_monitored
+
+        self._timer = QTimer()
+        self._timer.timeout.connect(self._monitor_param)
+
+    def run(self):
+        self._timer.start(100)
+
+    def _monitor_param(self):
+        for param in self._params_monitored:
+            try:
+                _reconf_client = DynrecClient(param, timeout=5.0)
+                self._signal.emit(param)
+            except rospy.exceptions.ROSException:
+                msg = "Could not connect to parameter: %s" % param
+                rospy.logerr(msg)
+                self._signal.emit(msg)
+                continue
 
 
 class MoveitWidget(QWidget):
@@ -52,6 +79,7 @@ class MoveitWidget(QWidget):
 
     # To be connected to PluginContainerWidget
     sig_sysmsg = None
+    sig_param = Signal(str)  # param name emitted
 
     def __init__(self, parent, plugin_context):
         """
@@ -74,14 +102,29 @@ class MoveitWidget(QWidget):
         self._widget_topic.set_selected_topics(self._selected_topics)
         self._widget_topic.start()
         # To connect signal in a widget to PluginContainerWidget.
-        #TODO: In this way, Signal from only one instance is hooked. 
+        #TODO: In this way, Signal from only one instance is hooked.
         # Not a good design at all.
         self.sig_sysmsg = self._widget_topic.sig_sysmsg
 
-        #TODO: Indicate on sys msg pane if capturing these topics fails.
-        # That might be because those topics are not published
+        #TODO: Init monitoring parameters.
+        self._param_datamodel = QStandardItemModel()
+        self._root_qitem = self._param_datamodel.invisibleRootItem()
+        self._params_monitored = ['/robot_description',
+                                  '/robot_description_semantics']
 
-        self.show()
+        self._param_check_thread = ParamCheckThread(self, self.sig_param,
+                                                    self._params_monitored)
+        self.sig_param.connect(self._monitor_parameters)
+        self._param_check_thread.start()
+
+        #self.show()
+
+    def _monitor_parameters(self, param_name):
+        """
+        Slot
+        """
+        qitem = QStandardItem(param_name)
+        self._root_qitem.appendRow(qitem)
 
     def save_settings(self, plugin_settings, instance_settings):
         # instance_settings.set_value('splitter', self._splitter.saveState())
