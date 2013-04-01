@@ -1,3 +1,2 @@
-# Ref https://github.com/yujinrobot/kobuki_desktop/blob/master/rosdep.yaml
 libmarble-dev:
   ubuntu: libmarble-dev

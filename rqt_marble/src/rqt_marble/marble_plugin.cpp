@@ -27,14 +27,7 @@
  *
  */
 //----------------------------------------------------------------------
-// Qt Includes
-#include <QLineEdit>
-#include <QFileInfo>
-#include <QFileDialog>
-#include <QStringList>
-#include <QStandardItemModel>
-#include <QModelIndex>
-// Marble Includes
+
 #include <marble/MarbleWidget.h>
 #include <marble/MarbleModel.h>
 #include <marble/MapThemeManager.h>
@@ -42,6 +35,13 @@
 #include <marble/GeoDataCoordinates.h>
 #include <marble/Route.h>
 #include <marble/RoutingModel.h>
+// Qt Includes
+#include <QLineEdit>
+#include <QFileInfo>
+#include <QFileDialog>
+#include <QStringList>
+#include <QStandardItemModel>
+#include <QModelIndex>
 
 #include <pluginlib/class_list_macros.h>
 #include <ros/package.h>
