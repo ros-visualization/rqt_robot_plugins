@@ -59,18 +59,12 @@ class ParamCheckThread(threading.Thread):
         self._timer.timeout.connect(self._monitor_param)
 
     def run(self):
-        self._timer.start(100)
+        self._timer.start(300)
 
     def _monitor_param(self):
         for param in self._params_monitored:
-            try:
-                _reconf_client = DynrecClient(param, timeout=5.0)
-                self._signal.emit(param)
-            except rospy.exceptions.ROSException:
-                msg = "Could not connect to parameter: %s" % param
-                rospy.logerr(msg)
-                self._signal.emit(msg)
-                continue
+            has_param = rospy.has_param(param)
+            self._signal.emit(has_param, param)
 
 
 class MoveitWidget(QWidget):
@@ -79,7 +73,7 @@ class MoveitWidget(QWidget):
 
     # To be connected to PluginContainerWidget
     sig_sysmsg = None
-    sig_param = Signal(str)  # param name emitted
+    sig_param = Signal(bool, str)  # param name emitted
 
     def __init__(self, parent, plugin_context):
         """
@@ -99,6 +93,7 @@ class MoveitWidget(QWidget):
                                  ('/pointcloud2', 'sensor_msgs/PointCloud2'),
                                  ('/image', 'sensor_msgs/Image'),
                                  ('/camera_info', 'sensor_msgs/CameraInfo')]
+
         self._widget_topic.set_selected_topics(self._selected_topics)
         self._widget_topic.start()
         # To connect signal in a widget to PluginContainerWidget.
@@ -106,25 +101,46 @@ class MoveitWidget(QWidget):
         # Not a good design at all.
         self.sig_sysmsg = self._widget_topic.sig_sysmsg
 
-        #TODO: Init monitoring parameters.
-        self._param_datamodel = QStandardItemModel()
+        # Init monitoring parameters.
+        self._param_qitems = {}
+        _params_monitored = ['/robot_description',
+                             '/robot_description_semantic']
+        self._init_monitor_parameters(_params_monitored)
+
+    def _init_monitor_parameters(self, params_monitored):
+        """
+        @type params_monitored: str[]
+        """
+        self._param_datamodel = QStandardItemModel(0, 2)
         self._root_qitem = self._param_datamodel.invisibleRootItem()
-        self._params_monitored = ['/robot_description',
-                                  '/robot_description_semantics']
+        self._view_reconf.setModel(self._param_datamodel)
 
         self._param_check_thread = ParamCheckThread(self, self.sig_param,
-                                                    self._params_monitored)
+                                                    params_monitored)
         self.sig_param.connect(self._monitor_parameters)
         self._param_check_thread.start()
 
-        #self.show()
-
-    def _monitor_parameters(self, param_name):
+    def _monitor_parameters(self, has_param, param_name):
         """
         Slot
+
+        @type has_param: bool
+        @type param_name: str
         """
-        qitem = QStandardItem(param_name)
-        self._root_qitem.appendRow(qitem)
+        rospy.loginfo('has_param={} par_name={}'.format(has_param, param_name))
+        param_name = str(param_name)
+        param_qitem = None
+        if not param_name in self._param_qitems:
+            param_qitem = QStandardItem(param_name)
+            self._param_qitems[param_name] = param_qitem
+            self._param_datamodel.appendRow(param_qitem)
+        else:  # qsitem with the param name already exists.
+            param_qitem = self._param_qitems[str(param_name)]
+
+        qindex = self._param_datamodel.indexFromItem(param_qitem)
+        qitem_param_status = QStandardItem(str(has_param))
+        self._param_datamodel.setItem(qindex.row(), 1, qitem_param_status)
+        #.insertColumn([qitem_param_status])
 
     def save_settings(self, plugin_settings, instance_settings):
         # instance_settings.set_value('splitter', self._splitter.saveState())

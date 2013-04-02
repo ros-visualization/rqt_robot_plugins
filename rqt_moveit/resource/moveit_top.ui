@@ -75,11 +75,17 @@
       </layout>
      </item>
      <item>
-      <widget class="TopicWidget" name="_widget_topic" />
+      <widget class="TopicWidget" name="_widget_topic" native="true"/>
      </item>
      <item>
-      <widget class="QTreeView" name="_treeview_reconf">
-       <property name="allColumnsShowFocus">
+      <widget class="QTableView" name="_view_reconf">
+       <property name="alternatingRowColors">
+        <bool>true</bool>
+       </property>
+       <property name="sortingEnabled">
+        <bool>false</bool>
+       </property>
+       <property name="allColumnsShowFocus" stdset="0">
         <bool>true</bool>
        </property>
       </widget>
