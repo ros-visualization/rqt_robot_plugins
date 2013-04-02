@@ -1,8 +1,11 @@
 <?xml version="1.0"?>
 <package>
   <name>rqt_moveit</name>
-  <version>0.0.0</version>
-  <description>The rqt_moveit package</description>
+  <version>0.2.9</version>
+  <description>
+   A rqt-based monitoring tool for <a href = "http://ros.org/wiki/moveit">
+   Moveit!</a>.
+  </description>
 
   <maintainer email="130s@alumni.smu.edu">Isaac Saito</maintainer>
   <author email="isaito@willowgarage.com">Isaac Saito</author>
@@ -14,10 +17,9 @@
 
   <buildtool_depend>catkin</buildtool_depend>
   <build_depend>moveit_ros_move_group</build_depend>
-  <run_depend>moveit_msgs</run_depend>
-  <run_depend>moveit_ros_move_group</run_depend>
+  <run_depend>moveit</run_depend>
+  <run_depend>rosnode</run_depend>
   <run_depend>rospy</run_depend>
-  <run_depend>rostopic</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
   <run_depend>rqt_py_common</run_depend>

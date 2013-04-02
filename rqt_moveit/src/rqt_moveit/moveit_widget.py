@@ -36,20 +36,41 @@ import os
 import sys
 import threading
 
-from dynamic_reconfigure.client import Client as DynrecClient
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
 from python_qt_binding.QtGui import QStandardItem, QStandardItemModel, QWidget
-from rqt_py_common.data_items import ReadonlyItem
 import rospkg
+from rosnode import rosnode_ping
 import rospy
-from rostopic import get_topic_class, ROSTopicHz
-from rqt_reconfigure.dynreconf_client_widget import DynreconfClientWidget
-from rqt_topic import topic_info, topic_widget
+
+
+class NodeMonitorThread(threading.Thread):
+    def __init__(self, parent, signal_tobe_emitted, nodes_monitored):
+        """
+        @type nodes_monitored: str[]
+        """
+        super(NodeMonitorThread, self).__init__()
+        self._parent = parent
+        self._signal = signal_tobe_emitted
+        self._nodes_monitored = nodes_monitored
+
+        self._timer = QTimer()
+        self._timer.timeout.connect(self._monitor_nodes)
+
+    def run(self):
+        self._timer.start(500)
+
+    def _monitor_nodes(self):
+        for nodename in self._nodes_monitored:
+            is_node_running = rosnode_ping(nodename, 1)
+            self._signal.emit(is_node_running, nodename)
 
 
 class ParamCheckThread(threading.Thread):
     def __init__(self, parent, signal_tobe_emitted, params_monitored):
+        """
+        @type params_monitored: str[]
+        """
         super(ParamCheckThread, self).__init__()
         self._parent = parent
         self._signal = signal_tobe_emitted
@@ -74,11 +95,21 @@ class MoveitWidget(QWidget):
     # To be connected to PluginContainerWidget
     sig_sysmsg = None
     sig_param = Signal(bool, str)  # param name emitted
+    sig_node = Signal(bool, str)  # param name emitted
 
     def __init__(self, parent, plugin_context):
         """
         @type parent: MoveitMain
         """
+
+        self._nodes_monitored = ['/move_group']
+        self._selected_topics = [('/pointcloud', 'sensor_msgs/PointCloud'),
+                                 ('/pointcloud2', 'sensor_msgs/PointCloud2'),
+                                 ('/image', 'sensor_msgs/Image'),
+                                 ('/camera_info', 'sensor_msgs/CameraInfo')]
+        _params_monitored = ['/robot_description',
+                             '/robot_description_semantic']
+
         super(MoveitWidget, self).__init__()
         self._parent = parent
         self._plugin_context = plugin_context
@@ -88,12 +119,13 @@ class MoveitWidget(QWidget):
                                'resource', 'moveit_top.ui')
         loadUi(ui_file, self)
 
-        # topic to show
-        self._selected_topics = [('/pointcloud', 'sensor_msgs/PointCloud'),
-                                 ('/pointcloud2', 'sensor_msgs/PointCloud2'),
-                                 ('/image', 'sensor_msgs/Image'),
-                                 ('/camera_info', 'sensor_msgs/CameraInfo')]
+        # Monitor node
+        self._node_qitems = {}
+        self._init_monitor_nodes(self._nodes_monitored)
+        #TODO: connect sys msg for nodes.
 
+        # topic to show
+        # Delegate GUI functionality to rqt_topic.TopicWidget.
         self._widget_topic.set_selected_topics(self._selected_topics)
         self._widget_topic.start()
         # To connect signal in a widget to PluginContainerWidget.
@@ -103,9 +135,20 @@ class MoveitWidget(QWidget):
 
         # Init monitoring parameters.
         self._param_qitems = {}
-        _params_monitored = ['/robot_description',
-                             '/robot_description_semantic']
         self._init_monitor_parameters(_params_monitored)
+
+    def _init_monitor_nodes(self, nodes_monitored):
+        """
+        @type params_monitored: str[]
+        """
+        self._node_datamodel = QStandardItemModel(0, 2)
+        self._root_qitem = self._node_datamodel.invisibleRootItem()
+        self._view_nodes.setModel(self._node_datamodel)
+
+        self._node_monitor_thread = NodeMonitorThread(self, self.sig_node,
+                                                      nodes_monitored)
+        self.sig_node.connect(self._monitor_nodes)
+        self._node_monitor_thread.start()
 
     def _init_monitor_parameters(self, params_monitored):
         """
@@ -119,6 +162,31 @@ class MoveitWidget(QWidget):
                                                     params_monitored)
         self.sig_param.connect(self._monitor_parameters)
         self._param_check_thread.start()
+
+    def _monitor_nodes(self, is_node_running, node_name):
+        """
+        Slot
+
+        @type is_node_running: bool
+        @type node_name: str
+        """
+        #TODO: What this method does is exactly the same with
+        # monitor_parameters. Unify them.
+
+        rospy.loginfo('is_node_running={} par_name={}'.format(is_node_running,
+                                                              node_name))
+        node_name = str(node_name)
+        node_qitem = None
+        if not node_name in self._node_qitems:
+            node_qitem = QStandardItem(node_name)
+            self._node_qitems[node_name] = node_qitem
+            self._node_datamodel.appendRow(node_qitem)
+        else:  # qsitem with the node name already exists.
+            node_qitem = self._node_qitems[str(node_name)]
+
+        qindex = self._node_datamodel.indexFromItem(node_qitem)
+        qitem_node_status = QStandardItem(str(is_node_running))
+        self._node_datamodel.setItem(qindex.row(), 1, qitem_node_status)
 
     def _monitor_parameters(self, has_param, param_name):
         """
