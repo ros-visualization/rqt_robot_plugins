@@ -187,7 +187,10 @@ class MoveitWidget(QWidget):
             node_qitem = self._node_qitems[str(node_name)]
 
         qindex = self._node_datamodel.indexFromItem(node_qitem)
-        qitem_node_status = QStandardItem(str(is_node_running))
+        _str_node_running = 'Not running'
+        if is_node_running:
+            _str_node_running = 'Running'
+        qitem_node_status = QStandardItem(_str_node_running)
         self._node_datamodel.setItem(qindex.row(), 1, qitem_node_status)
 
     def _monitor_parameters(self, has_param, param_name):
@@ -208,7 +211,10 @@ class MoveitWidget(QWidget):
             param_qitem = self._param_qitems[str(param_name)]
 
         qindex = self._param_datamodel.indexFromItem(param_qitem)
-        qitem_param_status = QStandardItem(str(has_param))
+        _str_param_found = 'Not found on Parameter Server'
+        if has_param:
+            _str_param_found = 'Found on Parameter Server'
+        qitem_param_status = QStandardItem(_str_param_found)
         self._param_datamodel.setItem(qindex.row(), 1, qitem_param_status)
         #.insertColumn([qitem_param_status])
 
