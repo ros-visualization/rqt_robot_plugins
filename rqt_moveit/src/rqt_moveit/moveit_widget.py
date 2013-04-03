@@ -64,6 +64,8 @@ class NodeMonitorThread(threading.Thread):
     def _monitor_nodes(self):
         for nodename in self._nodes_monitored:
             is_node_running = rosnode_ping(nodename, 1)
+
+            #TODO: segfault occurs here most of every time the plugin shut down
             self._signal.emit(is_node_running, nodename)
 
 
@@ -118,7 +120,7 @@ class MoveitWidget(QWidget):
         self._rospack = rospkg.RosPack()
         ui_file = os.path.join(self._rospack.get_path('rqt_moveit'),
                                'resource', 'moveit_top.ui')
-        loadUi(ui_file, self)
+        loadUi(ui_file, self, {'TopicWidget': TopicWidget})
 
         # Monitor node
         self._node_qitems = {}

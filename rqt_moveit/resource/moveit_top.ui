@@ -25,7 +25,7 @@
   <property name="windowTitle">
    <string>Moveit rqt plugin</string>
   </property>
-  <layout class="QHBoxLayout" name="_hlayout_top">
+  <layout class="QVBoxLayout" name="verticalLayout">
    <property name="spacing">
     <number>0</number>
    </property>
@@ -33,59 +33,69 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QSplitter" name="_splitter">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Maximum" vsizetype="Maximum">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Panel</enum>
-     </property>
+    <widget class="QSplitter" name="splitter">
      <property name="orientation">
-      <enum>Qt::Horizontal</enum>
+      <enum>Qt::Vertical</enum>
      </property>
      <property name="handleWidth">
-      <number>2</number>
+      <number>9</number>
      </property>
+     <widget class="QTableView" name="_view_nodes">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>30</height>
+       </size>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>false</bool>
+      </property>
+      <property name="allColumnsShowFocus" stdset="0">
+       <bool>true</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+     <widget class="QTableView" name="_view_reconf">
+      <property name="minimumSize">
+       <size>
+        <width>0</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="alternatingRowColors">
+       <bool>true</bool>
+      </property>
+      <property name="sortingEnabled">
+       <bool>false</bool>
+      </property>
+      <property name="allColumnsShowFocus" stdset="0">
+       <bool>true</bool>
+      </property>
+      <attribute name="horizontalHeaderVisible">
+       <bool>false</bool>
+      </attribute>
+     </widget>
+        
     </widget>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="verticalLayout">
-     <item>
-      <widget class="QTableView" name="_view_nodes">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="allColumnsShowFocus" stdset="0">
-        <bool>true</bool>
-       </property>
-       <attribute name="horizontalHeaderVisible">
-        <bool>false</bool>
-       </attribute>
-      </widget>
-     </item>
-     <item>
-      <widget class="TopicWidget" name="_widget_topic" native="true"/>
-     </item>
-     <item>
-      <widget class="QTableView" name="_view_reconf">
-       <property name="alternatingRowColors">
-        <bool>true</bool>
-       </property>
-       <property name="sortingEnabled">
-        <bool>false</bool>
-       </property>
-       <property name="allColumnsShowFocus" stdset="0">
-        <bool>true</bool>
-       </property>
-      </widget>
-     </item>
-    </layout>
+       <widget class="TopicWidget" name="_widget_topic" native="true">
+     <property name="enabled">
+      <bool>true</bool>
+     </property>
+     <property name="minimumSize">
+      <size>
+       <width>0</width>
+       <height>110</height>
+      </size>
+     </property>
+    </widget>
+   
    </item>
   </layout>
  </widget>
