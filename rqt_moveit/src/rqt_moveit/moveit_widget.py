@@ -42,6 +42,7 @@ from python_qt_binding.QtGui import QStandardItem, QStandardItemModel, QWidget
 import rospkg
 from rosnode import rosnode_ping
 import rospy
+from rqt_topic.topic_widget import TopicWidget
 
 
 class NodeMonitorThread(threading.Thread):
@@ -127,6 +128,7 @@ class MoveitWidget(QWidget):
         # topic to show
         # Delegate GUI functionality to rqt_topic.TopicWidget.
         self._widget_topic.set_selected_topics(self._selected_topics)
+        self._widget_topic.set_topic_specifier(TopicWidget.SELECT_BY_MSGTYPE)
         self._widget_topic.start()
         # To connect signal in a widget to PluginContainerWidget.
         #TODO: In this way, Signal from only one instance is hooked.
@@ -173,7 +175,7 @@ class MoveitWidget(QWidget):
         #TODO: What this method does is exactly the same with
         # monitor_parameters. Unify them.
 
-        rospy.loginfo('is_node_running={} par_name={}'.format(is_node_running,
+        rospy.logdebug('is_node_running={} par_name={}'.format(is_node_running,
                                                               node_name))
         node_name = str(node_name)
         node_qitem = None
@@ -195,7 +197,7 @@ class MoveitWidget(QWidget):
         @type has_param: bool
         @type param_name: str
         """
-        rospy.loginfo('has_param={} par_name={}'.format(has_param, param_name))
+        rospy.logdebug('has_param={} par_name={}'.format(has_param, param_name))
         param_name = str(param_name)
         param_qitem = None
         if not param_name in self._param_qitems:
