@@ -25,6 +25,7 @@
   <author>Ze'ev Klapow</author>
   <author>Isaac Saito</author>
 
+  <run_depend>rqt_moveit</run_depend>
   <run_depend>rqt_nav_view</run_depend>
   <run_depend>rqt_pose_view</run_depend>
   <run_depend>rqt_robot_dashboard</run_depend>
