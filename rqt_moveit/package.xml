@@ -16,7 +16,7 @@
   <url type="bugtracker">https://github.com/ros-visualization/rqt_robot_plugins/issues</url>
 
   <buildtool_depend>catkin</buildtool_depend>
-  <run_depend>moveit</run_depend>
+  <run_depend>moveit_ros</run_depend>
   <!-- 4/2/2013/Isaac/This pkg actually doesn't depend on moveit pkg. Still
        I'm listing this dependency in order to clarify that this pkg is
        related to moveit. May not be a good thing so alternative idea is
