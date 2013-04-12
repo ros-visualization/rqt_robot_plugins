@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <package>
   <name>rqt_moveit</name>
-  <version>0.2.13</version>
+  <version>0.2.14</version>
   <description>
    A rqt-based monitoring tool for <a href = "http://ros.org/wiki/moveit">
    Moveit!</a> motion planner. This is still very experimental.
