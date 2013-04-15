@@ -1,10 +1,11 @@
 <library path="src">
-  <class name="Moveit" type="rqt_moveit.moveit_plugin.MoveitPlugin" base_class_type="rqt_gui_py::Plugin">
+  <class name="Moveit" type="rqt_moveit.moveit_plugin.MoveitPlugin"
+         base_class_type="rqt_gui_py::Plugin">
     <description>
       GUI to support monitoring during Moveit! runtime.
     </description>
     <qtgui>
-      <label>Moveit!</label>
+      <label>Moveit! Monitor</label>
       <icon type="theme">accessories-text-editor</icon>
       <statustip>GUI to support monitoring during Moveit! runtime.</statustip>
     </qtgui>
