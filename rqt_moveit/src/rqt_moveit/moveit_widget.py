@@ -65,12 +65,10 @@ class NodeMonitorThread(threading.Thread):
         """
         Works as a slot of QTimer.timeout
         """
+        
         for nodename in self._nodes_monitored:
             is_node_running = rosnode_ping(nodename, 1)
-
-            #TODO: segfault occurs here most of every time plugin shuts down
-            if self._signal:
-                self._signal.emit(is_node_running, nodename)
+            self._signal.emit(is_node_running, nodename)
 
 
 class ParamCheckThread(threading.Thread):
@@ -93,7 +91,6 @@ class ParamCheckThread(threading.Thread):
         for param in self._params_monitored:
             has_param = rospy.has_param(param)
 
-            #TODO: segfault occurs here most of every time plugin shuts down
             rospy.logdebug('ParamCheckThread 1 {}'.format(param))
             self._signal.emit(has_param, param)
 
@@ -169,8 +166,13 @@ class MoveitWidget(QWidget):
         """
         self._param_datamodel = QStandardItemModel(0, 2)
         self._root_qitem = self._param_datamodel.invisibleRootItem()
-        self._view_reconf.setModel(self._param_datamodel)
+        self._view_params.setModel(self._param_datamodel)
 
+        # Names of header.
+        _param_names = ['Param name', 'Found on Parameter Server?']
+        self._param_datamodel.setHorizontalHeaderLabels(_param_names)
+
+        # Set checker thread.
         self._param_check_thread = ParamCheckThread(self, self.sig_param,
                                                     params_monitored)
         self.sig_param.connect(self._monitor_parameters)
@@ -223,12 +225,12 @@ class MoveitWidget(QWidget):
             param_qitem = self._param_qitems[str(param_name)]
 
         qindex = self._param_datamodel.indexFromItem(param_qitem)
-        _str_param_found = 'Not found on Parameter Server'
+        _str_param_found = 'No'
         if has_param:
-            _str_param_found = 'Found on Parameter Server'
+            _str_param_found = 'Yes'
         qitem_param_status = QStandardItem(_str_param_found)
         self._param_datamodel.setItem(qindex.row(), 1, qitem_param_status)
-        #.insertColumn([qitem_param_status])
+        self._view_params.resizeColumnsToContents()
 
     def save_settings(self, plugin_settings, instance_settings):
         # instance_settings.set_value('splitter', self._splitter.saveState())
