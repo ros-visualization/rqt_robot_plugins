@@ -62,11 +62,15 @@ class NodeMonitorThread(threading.Thread):
         self._timer.start(500)
 
     def _monitor_nodes(self):
+        """
+        Works as a slot of QTimer.timeout
+        """
         for nodename in self._nodes_monitored:
             is_node_running = rosnode_ping(nodename, 1)
 
-            #TODO: segfault occurs here most of every time the plugin shut down
-            self._signal.emit(is_node_running, nodename)
+            #TODO: segfault occurs here most of every time plugin shuts down
+            if self._signal:
+                self._signal.emit(is_node_running, nodename)
 
 
 class ParamCheckThread(threading.Thread):
@@ -88,6 +92,9 @@ class ParamCheckThread(threading.Thread):
     def _monitor_param(self):
         for param in self._params_monitored:
             has_param = rospy.has_param(param)
+
+            #TODO: segfault occurs here most of every time plugin shuts down
+            rospy.logdebug('ParamCheckThread 1 {}'.format(param))
             self._signal.emit(has_param, param)
 
 
@@ -123,6 +130,7 @@ class MoveitWidget(QWidget):
         loadUi(ui_file, self, {'TopicWidget': TopicWidget})
 
         # Monitor node
+        self._node_monitor_thread = None
         self._node_qitems = {}
         self._init_monitor_nodes(self._nodes_monitored)
         #TODO: connect sys msg for nodes.
@@ -138,6 +146,7 @@ class MoveitWidget(QWidget):
         self.sig_sysmsg = self._widget_topic.sig_sysmsg
 
         # Init monitoring parameters.
+        self._param_check_thread = None
         self._param_qitems = {}
         self._init_monitor_parameters(_params_monitored)
 
@@ -202,7 +211,8 @@ class MoveitWidget(QWidget):
         @type has_param: bool
         @type param_name: str
         """
-        rospy.logdebug('has_param={} par_name={}'.format(has_param, param_name))
+        rospy.logdebug('has_param={} par_name={}'.format(has_param,
+                                                         param_name))
         param_name = str(param_name)
         param_qitem = None
         if not param_name in self._param_qitems:
@@ -232,8 +242,12 @@ class MoveitWidget(QWidget):
         pass
 
     def shutdown(self):
-        # TODO: impl
-        pass
+        try:
+            self._node_monitor_thread = None
+            self._param_check_thread = None
+        except RuntimeError as e:
+            #TODO: throw exception.
+            rospy.logerr(e)
 
 
 if __name__ == '__main__':
