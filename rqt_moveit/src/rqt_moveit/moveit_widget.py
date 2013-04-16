@@ -65,7 +65,7 @@ class NodeMonitorThread(threading.Thread):
         """
         Works as a slot of QTimer.timeout
         """
-        
+
         for nodename in self._nodes_monitored:
             is_node_running = rosnode_ping(nodename, 1)
             self._signal.emit(is_node_running, nodename)
@@ -98,11 +98,12 @@ class ParamCheckThread(threading.Thread):
 class MoveitWidget(QWidget):
     """#TODO: comment
     """
-
     # To be connected to PluginContainerWidget
     sig_sysmsg = None
     sig_param = Signal(bool, str)  # param name emitted
     sig_node = Signal(bool, str)  # param name emitted
+
+    _SPLITTER_H = 'splitter_horizontal'
 
     def __init__(self, parent, plugin_context):
         """
@@ -125,6 +126,11 @@ class MoveitWidget(QWidget):
         ui_file = os.path.join(self._rospack.get_path('rqt_moveit'),
                                'resource', 'moveit_top.ui')
         loadUi(ui_file, self, {'TopicWidget': TopicWidget})
+
+        # Custom widget classes don't show in QSplitter when they instantiated
+        # in .ui file and not explicitly added to QSplitter like this. Thus
+        # this is a workaround.
+        self._splitter.addWidget(self._widget_topic)
 
         # Monitor node
         self._node_monitor_thread = None
@@ -233,14 +239,15 @@ class MoveitWidget(QWidget):
         self._view_params.resizeColumnsToContents()
 
     def save_settings(self, plugin_settings, instance_settings):
-        # instance_settings.set_value('splitter', self._splitter.saveState())
-        pass
+        instance_settings.set_value(self._SPLITTER_H,
+                                    self._splitter.saveState())
 
     def restore_settings(self, plugin_settings, instance_settings):
-#        if instance_settings.contains('splitter'):
-#            self._splitter.restoreState(instance_settings.value('splitter'))
-#        else:
-#            self._splitter.setSizes([100, 100, 200])
+        if instance_settings.contains(self._SPLITTER_H):
+            self._splitter.restoreState(instance_settings.value(
+                                                             self._SPLITTER_H))
+        else:
+            self._splitter.setSizes([100, 100, 200])
         pass
 
     def shutdown(self):
