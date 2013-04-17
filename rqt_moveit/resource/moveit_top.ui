@@ -40,25 +40,60 @@
      <property name="handleWidth">
       <number>9</number>
      </property>
-     <widget class="QTableView" name="_view_nodes">
-      <property name="minimumSize">
-       <size>
-        <width>0</width>
-        <height>30</height>
-       </size>
-      </property>
-      <property name="alternatingRowColors">
-       <bool>true</bool>
-      </property>
-      <property name="sortingEnabled">
-       <bool>false</bool>
-      </property>
-      <property name="allColumnsShowFocus" stdset="0">
-       <bool>true</bool>
-      </property>
-      <attribute name="horizontalHeaderVisible">
-       <bool>false</bool>
-      </attribute>
+     <widget class="QWidget" name="horizontalLayoutWidget">
+      <layout class="QHBoxLayout" name="_layout_h_view">
+       <item>
+        <widget class="QTableView" name="_view_nodes">
+         <property name="minimumSize">
+          <size>
+           <width>0</width>
+           <height>30</height>
+          </size>
+         </property>
+         <property name="alternatingRowColors">
+          <bool>true</bool>
+         </property>
+         <property name="sortingEnabled">
+          <bool>false</bool>
+         </property>
+         <property name="allColumnsShowFocus" stdset="0">
+          <bool>true</bool>
+         </property>
+         <attribute name="horizontalHeaderVisible">
+          <bool>false</bool>
+         </attribute>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="_groupbox_operation">
+         <property name="minimumSize">
+          <size>
+           <width>30</width>
+           <height>50</height>
+          </size>
+         </property>
+         <property name="title">
+          <string>Refresh rate</string>
+         </property>
+         <widget class="QSpinBox" name="_spinbox_refreshrate">
+          <property name="geometry">
+           <rect>
+            <x>0</x>
+            <y>20</y>
+            <width>60</width>
+            <height>27</height>
+           </rect>
+          </property>
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Minimum" vsizetype="Preferred">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+         </widget>
+        </widget>
+       </item>
+      </layout>
      </widget>
      <widget class="QTableView" name="_view_params">
       <property name="minimumSize">
@@ -83,21 +118,17 @@
        <bool>true</bool>
       </attribute>
      </widget>
-    <widget class="TopicWidget" name="_widget_topic" native="true">
-     <property name="enabled">
-      <bool>true</bool>
+     <widget class="TopicWidget" name="_widget_topic" native="true">
+      <property name="enabled">
+       <bool>true</bool>
+      </property>
+      <property name="minimumSize">
        <size>
         <width>0</width>
-        <height>50</height>
-       </size>      
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>0</width>
-       <height>110</height>
-      </size>
-     </property>
-    </widget>
+        <height>110</height>
+       </size>
+      </property>
+     </widget>
     </widget>
    </item>
   </layout>

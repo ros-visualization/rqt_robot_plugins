@@ -24,7 +24,6 @@
   <run_depend>rqt_topic</run_depend>
   <run_depend>sensor_msgs</run_depend>
   
-  <!-- The export tag contains other, unspecified, tags -->
   <export>
     <rqt_gui plugin="${prefix}/plugin.xml" />
   </export>

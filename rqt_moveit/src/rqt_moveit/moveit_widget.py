@@ -34,7 +34,8 @@
 
 import os
 import sys
-import threading
+from threading import Thread
+import time
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
@@ -43,56 +44,6 @@ import rospkg
 from rosnode import rosnode_ping
 import rospy
 from rqt_topic.topic_widget import TopicWidget
-
-
-class NodeMonitorThread(threading.Thread):
-    def __init__(self, parent, signal_tobe_emitted, nodes_monitored):
-        """
-        @type nodes_monitored: str[]
-        """
-        super(NodeMonitorThread, self).__init__()
-        self._parent = parent
-        self._signal = signal_tobe_emitted
-        self._nodes_monitored = nodes_monitored
-
-        self._timer = QTimer()
-        self._timer.timeout.connect(self._monitor_nodes)
-
-    def run(self):
-        self._timer.start(500)
-
-    def _monitor_nodes(self):
-        """
-        Works as a slot of QTimer.timeout
-        """
-
-        for nodename in self._nodes_monitored:
-            is_node_running = rosnode_ping(nodename, 1)
-            self._signal.emit(is_node_running, nodename)
-
-
-class ParamCheckThread(threading.Thread):
-    def __init__(self, parent, signal_tobe_emitted, params_monitored):
-        """
-        @type params_monitored: str[]
-        """
-        super(ParamCheckThread, self).__init__()
-        self._parent = parent
-        self._signal = signal_tobe_emitted
-        self._params_monitored = params_monitored
-
-        self._timer = QTimer()
-        self._timer.timeout.connect(self._monitor_param)
-
-    def run(self):
-        self._timer.start(300)
-
-    def _monitor_param(self):
-        for param in self._params_monitored:
-            has_param = rospy.has_param(param)
-
-            rospy.logdebug('ParamCheckThread 1 {}'.format(param))
-            self._signal.emit(has_param, param)
 
 
 class MoveitWidget(QWidget):
@@ -115,12 +66,13 @@ class MoveitWidget(QWidget):
                                  ('/pointcloud2', 'sensor_msgs/PointCloud2'),
                                  ('/image', 'sensor_msgs/Image'),
                                  ('/camera_info', 'sensor_msgs/CameraInfo')]
-        _params_monitored = ['/robot_description',
+        self._params_monitored = ['/robot_description',
                              '/robot_description_semantic']
 
         super(MoveitWidget, self).__init__()
         self._parent = parent
         self._plugin_context = plugin_context
+        self._refresh_rate = 5  # With default value
 
         self._rospack = rospkg.RosPack()
         ui_file = os.path.join(self._rospack.get_path('rqt_moveit'),
@@ -132,10 +84,17 @@ class MoveitWidget(QWidget):
         # this is a workaround.
         self._splitter.addWidget(self._widget_topic)
 
+        self._spinbox_refreshrate.valueChanged.connect(
+                                                      self._update_refreshrate)
+        # Show default ref rate on QSpinbox
+        self._spinbox_refreshrate.setValue(self._refresh_rate)
+
         # Monitor node
-        self._node_monitor_thread = None
+        self._is_checking_nodes = True
         self._node_qitems = {}
-        self._init_monitor_nodes(self._nodes_monitored)
+        self._node_monitor_thread = self._init_monitor_nodes(
+                                                         self._nodes_monitored)
+        self._node_monitor_thread.start()
         #TODO: connect sys msg for nodes.
 
         # topic to show
@@ -149,24 +108,57 @@ class MoveitWidget(QWidget):
         self.sig_sysmsg = self._widget_topic.sig_sysmsg
 
         # Init monitoring parameters.
-        self._param_check_thread = None
+        self._is_checking_params = True
         self._param_qitems = {}
-        self._init_monitor_parameters(_params_monitored)
+        _col_names_paramtable = ['Param name', 'Found on Parameter Server?']
+        self._param_check_thread = self._init_monitor_parameters(
+                                                      self._params_monitored,
+                                                      _col_names_paramtable)
+        self._param_check_thread.start()
 
     def _init_monitor_nodes(self, nodes_monitored):
         """
         @type params_monitored: str[]
+        @rtype: Thread
         """
         self._node_datamodel = QStandardItemModel(0, 2)
         self._root_qitem = self._node_datamodel.invisibleRootItem()
         self._view_nodes.setModel(self._node_datamodel)
 
-        self._node_monitor_thread = NodeMonitorThread(self, self.sig_node,
-                                                      nodes_monitored)
-        self.sig_node.connect(self._monitor_nodes)
-        self._node_monitor_thread.start()
+        node_monitor_thread = Thread(target=self.check_nodes_alive,
+                                           args=(self.sig_node,
+                                                 self._nodes_monitored))
+#        self._node_monitor_thread = NodeMonitorThread(self, self.sig_node,
+#                                                      nodes_monitored)
+        self.sig_node.connect(self._update_output_nodes)
+        return node_monitor_thread
 
-    def _init_monitor_parameters(self, params_monitored):
+    def check_nodes_alive(self, signal, nodes_monitored):
+        """
+        Working as a callback of Thread class, this method keeps looping to
+        watch if the nodes whose names are passed exist and emits signal per
+        each node.
+
+        Notice that what MoveitWidget.check_nodes_alive &
+        MoveitWidget.check_params_alive do is very similar, but since both of
+        them are supposed to be passed to Thread class, there might not be
+        a way to generalize these 2.
+
+        @param signal: Signal(bool, str)
+        @type nodes_monitored: str[]
+        """
+        while self._is_checking_nodes:
+            for nodename in nodes_monitored:
+                #TODO: rosnode_ping prints when the node is not found.
+                # Currently I have no idea how to capture that from here.
+                is_node_running = rosnode_ping(nodename, 1)
+
+                signal.emit(is_node_running, nodename)
+                rospy.logdebug('_update_output_nodes')
+            time.sleep(self._refresh_rate)
+
+    def _init_monitor_parameters(self, params_monitored,
+                                 _col_names_paramtable=None):
         """
         @type params_monitored: str[]
         """
@@ -174,19 +166,20 @@ class MoveitWidget(QWidget):
         self._root_qitem = self._param_datamodel.invisibleRootItem()
         self._view_params.setModel(self._param_datamodel)
 
-        # Names of header.
-        _param_names = ['Param name', 'Found on Parameter Server?']
-        self._param_datamodel.setHorizontalHeaderLabels(_param_names)
+        # Names of header on the QTableView.
+        if not _col_names_paramtable:
+            _col_names_paramtable = ['Param name',
+                                     'Found on Parameter Server?']
+        self._param_datamodel.setHorizontalHeaderLabels(_col_names_paramtable)
 
-        # Set checker thread.
-        self._param_check_thread = ParamCheckThread(self, self.sig_param,
-                                                    params_monitored)
-        self.sig_param.connect(self._monitor_parameters)
-        self._param_check_thread.start()
+        param_check_thread = Thread(target=self.check_params_alive,
+                                    args=(self.sig_param,
+                                          self._params_monitored))
+        return param_check_thread
 
-    def _monitor_nodes(self, is_node_running, node_name):
+    def _update_output_nodes(self, is_node_running, node_name):
         """
-        Slot
+        Slot for signals that tell nodes existence.
 
         @type is_node_running: bool
         @type node_name: str
@@ -212,7 +205,28 @@ class MoveitWidget(QWidget):
         qitem_node_status = QStandardItem(_str_node_running)
         self._node_datamodel.setItem(qindex.row(), 1, qitem_node_status)
 
-    def _monitor_parameters(self, has_param, param_name):
+    def check_params_alive(self, signal, params_monitored):
+        """
+        Working as a callback of Thread class, this method keeps looping to
+        watch if the params whose names are passed exist and emits signal per
+        each node.
+
+        Notice that what MoveitWidget.check_nodes_alive &
+        MoveitWidget.check_params_alive do is very similar, but since both of
+        them are supposed to be passed to Thread class, there might not be
+        a way to generalize these 2.
+
+        @param signal: Signal(bool, str)
+        @type params_monitored: str[]
+        """
+        while self._is_checking_params:
+            for param in params_monitored:
+                has_param = rospy.has_param(param)
+                signal.emit(has_param, param)
+                rospy.logdebug('_update_output_params')
+            time.sleep(self._refresh_rate)
+
+    def _update_output_parameters(self, has_param, param_name):
         """
         Slot
 
@@ -238,6 +252,14 @@ class MoveitWidget(QWidget):
         self._param_datamodel.setItem(qindex.row(), 1, qitem_param_status)
         self._view_params.resizeColumnsToContents()
 
+    def _update_refreshrate(self, refresh_rate):
+        """
+        Slot
+
+        @type refresh_rate: int
+        """
+        self._refresh_rate = refresh_rate
+
     def save_settings(self, plugin_settings, instance_settings):
         instance_settings.set_value(self._SPLITTER_H,
                                     self._splitter.saveState())
@@ -251,12 +273,25 @@ class MoveitWidget(QWidget):
         pass
 
     def shutdown(self):
+        """
+        Overridden.
+
+        Close threads.
+
+        @raise RuntimeError:
+        """
         try:
+            #self._node_monitor_thread.join()  # No effect
+            self._is_checking_nodes = False
             self._node_monitor_thread = None
+            #self._param_check_thread.join()
+
+            self._is_checking_params = False
             self._param_check_thread = None
         except RuntimeError as e:
             #TODO: throw exception.
             rospy.logerr(e)
+            raise e
 
 
 if __name__ == '__main__':
