@@ -67,7 +67,7 @@ class MoveitWidget(QWidget):
                                  ('/image', 'sensor_msgs/Image'),
                                  ('/camera_info', 'sensor_msgs/CameraInfo')]
         self._params_monitored = ['/robot_description',
-                             '/robot_description_semantic']
+                                  '/robot_description_semantic']
 
         super(MoveitWidget, self).__init__()
         self._parent = parent
@@ -162,6 +162,8 @@ class MoveitWidget(QWidget):
         """
         @type params_monitored: str[]
         """
+        self._params_monitored = params_monitored
+
         self._param_datamodel = QStandardItemModel(0, 2)
         self._root_qitem = self._param_datamodel.invisibleRootItem()
         self._view_params.setModel(self._param_datamodel)
@@ -171,6 +173,8 @@ class MoveitWidget(QWidget):
             _col_names_paramtable = ['Param name',
                                      'Found on Parameter Server?']
         self._param_datamodel.setHorizontalHeaderLabels(_col_names_paramtable)
+
+        self.sig_param.connect(self._update_output_parameters)
 
         param_check_thread = Thread(target=self.check_params_alive,
                                     args=(self.sig_param,
@@ -223,7 +227,7 @@ class MoveitWidget(QWidget):
             for param in params_monitored:
                 has_param = rospy.has_param(param)
                 signal.emit(has_param, param)
-                rospy.logdebug('_update_output_params')
+                rospy.logdebug('check_param_alive: {}'.format(param))
             time.sleep(self._refresh_rate)
 
     def _update_output_parameters(self, has_param, param_name):
@@ -289,7 +293,6 @@ class MoveitWidget(QWidget):
             self._is_checking_params = False
             self._param_check_thread = None
         except RuntimeError as e:
-            #TODO: throw exception.
             rospy.logerr(e)
             raise e
 
