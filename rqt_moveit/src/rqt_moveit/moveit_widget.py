@@ -125,7 +125,7 @@ class MoveitWidget(QWidget):
         self._root_qitem = self._node_datamodel.invisibleRootItem()
         self._view_nodes.setModel(self._node_datamodel)
 
-        node_monitor_thread = Thread(target=self.check_nodes_alive,
+        node_monitor_thread = Thread(target=self._check_nodes_alive,
                                            args=(self.sig_node,
                                                  self._nodes_monitored))
 #        self._node_monitor_thread = NodeMonitorThread(self, self.sig_node,
@@ -133,14 +133,14 @@ class MoveitWidget(QWidget):
         self.sig_node.connect(self._update_output_nodes)
         return node_monitor_thread
 
-    def check_nodes_alive(self, signal, nodes_monitored):
+    def _check_nodes_alive(self, signal, nodes_monitored):
         """
         Working as a callback of Thread class, this method keeps looping to
         watch if the nodes whose names are passed exist and emits signal per
         each node.
 
-        Notice that what MoveitWidget.check_nodes_alive &
-        MoveitWidget.check_params_alive do is very similar, but since both of
+        Notice that what MoveitWidget._check_nodes_alive &
+        MoveitWidget._check_params_alive do is very similar, but since both of
         them are supposed to be passed to Thread class, there might not be
         a way to generalize these 2.
 
@@ -176,7 +176,7 @@ class MoveitWidget(QWidget):
 
         self.sig_param.connect(self._update_output_parameters)
 
-        param_check_thread = Thread(target=self.check_params_alive,
+        param_check_thread = Thread(target=self._check_params_alive,
                                     args=(self.sig_param,
                                           self._params_monitored))
         return param_check_thread
@@ -209,14 +209,14 @@ class MoveitWidget(QWidget):
         qitem_node_status = QStandardItem(_str_node_running)
         self._node_datamodel.setItem(qindex.row(), 1, qitem_node_status)
 
-    def check_params_alive(self, signal, params_monitored):
+    def _check_params_alive(self, signal, params_monitored):
         """
         Working as a callback of Thread class, this method keeps looping to
         watch if the params whose names are passed exist and emits signal per
         each node.
 
-        Notice that what MoveitWidget.check_nodes_alive &
-        MoveitWidget.check_params_alive do is very similar, but since both of
+        Notice that what MoveitWidget._check_nodes_alive &
+        MoveitWidget._check_params_alive do is very similar, but since both of
         them are supposed to be passed to Thread class, there might not be
         a way to generalize these 2.
 

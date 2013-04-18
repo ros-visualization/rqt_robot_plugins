@@ -32,10 +32,6 @@
 #
 # Author: Isaac Saito
 
-import sys
-
-from python_qt_binding.QtCore import QTimer, Signal
-import rospy
 from rqt_py_common.plugin_container_widget import PluginContainerWidget
 from rqt_gui_py.plugin import Plugin
 
@@ -75,11 +71,3 @@ class MoveitPlugin(Plugin):
         Update necessary components (per topic) regularly
         """
         self._moveit_widget.update_topic_table()
-
-
-if __name__ == '__main__':
-    # main should be used only for debug purpose.
-    # This moveites this QWidget as a standalone rqt gui.
-    from rqt_gui.main import Main
-    main = Main()
-    sys.exit(main.main(sys.argv, standalone='rqt_moveit'))
