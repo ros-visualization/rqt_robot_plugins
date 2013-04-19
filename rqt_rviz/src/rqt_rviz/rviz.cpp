@@ -30,13 +30,15 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <rqt_rviz/rviz.h>
-
-#include <pluginlib/class_list_macros.h>
 #include <OGRE/OgreLogManager.h>
 
 #include <QCloseEvent>
 #include <QMenuBar>
+
+#include <pluginlib/class_list_macros.h>
+
+#include <rqt_rviz/rviz.h>
+
 
 namespace rqt_rviz {
 
