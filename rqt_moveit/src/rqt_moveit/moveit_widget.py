@@ -220,12 +220,17 @@ class MoveitWidget(QWidget):
         them are supposed to be passed to Thread class, there might not be
         a way to generalize these 2.
 
-        @param signal: Signal(bool, str)
+        @type signal: Signal(bool, str)
+        @param signal: emitting a name of the parameter that's found.
         @type params_monitored: str[]
         """
         while self._is_checking_params:
             for param in params_monitored:
-                has_param = rospy.has_param(param)
+                try:
+                    has_param = rospy.has_param(param)
+                except rospy.exceptions.ROSException as e:
+                    self.sig_sysmsg.emit(
+                         'Exception upon rospy.has_param {}'.format(e.message))
                 signal.emit(has_param, param)
                 rospy.logdebug('check_param_alive: {}'.format(param))
             time.sleep(self._refresh_rate)
