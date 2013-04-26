@@ -20,7 +20,6 @@
   <run_depend>python_qt_binding</run_depend>
   <run_depend>python-qt-bindings-gl</run_depend>
   <run_depend>python-rospkg</run_depend>
-  <run_depend>rospkg</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>rostopic</run_depend>
   <run_depend>rqt_gui</run_depend>
