@@ -1,6 +1,6 @@
 <package>
   <name>rqt_pose_view</name>
-  <version>0.2.15</version>
+  <version>0.2.14</version>
   <description>rqt_pose_view provides a GUI plugin for visualizing 3D poses.</description>
   <maintainer email="scholz@sim.tu-darmstadt.de">Dorian Scholz</maintainer>
   <maintainer email="130s@2000.jukuin.keio.ac.jp">Isaac Saito</maintainer>
@@ -20,7 +20,6 @@
   <run_depend>python_qt_binding</run_depend>
   <run_depend>python-qt-bindings-gl</run_depend>
   <run_depend>python-rospkg</run_depend>
-  <run_depend>rospkg</run_depend>
   <run_depend>rospy</run_depend>
   <run_depend>rostopic</run_depend>
   <run_depend>rqt_gui</run_depend>
