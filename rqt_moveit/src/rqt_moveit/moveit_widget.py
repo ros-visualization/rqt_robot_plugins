@@ -41,7 +41,8 @@ from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
 from python_qt_binding.QtGui import QStandardItem, QStandardItemModel, QWidget
 import rospkg
-from rosnode import rosnode_ping
+#from rosnode import rosnode_ping, ROSNodeIOException
+#from rosnode import ROSNodeIOException
 import rospy
 from rqt_topic.topic_widget import TopicWidget
 
@@ -148,13 +149,24 @@ class MoveitWidget(QWidget):
         @type nodes_monitored: str[]
         """
         while self._is_checking_nodes:
+            rosnode_dynamically_loaded = __import__('rosnode')
+            #from rosnode import rosnode_ping
             for nodename in nodes_monitored:
                 #TODO: rosnode_ping prints when the node is not found.
                 # Currently I have no idea how to capture that from here.
-                is_node_running = rosnode_ping(nodename, 1)
+                try:
+                    #is_node_running = rosnode_ping(nodename, 1)
+                    is_node_running = rosnode_dynamically_loaded.rosnode_ping(
+                                                                 nodename, 1)
+                except rosnode_dynamically_loaded.ROSNodeIOException as e:
+                    #TODO: Needs to be indicated on GUI
+                    #      (eg. PluginContainerWidget)
+                    rospy.logerr(e.message)
+                    is_node_running = False
 
                 signal.emit(is_node_running, nodename)
                 rospy.logdebug('_update_output_nodes')
+            del rosnode_dynamically_loaded
             time.sleep(self._refresh_rate)
 
     def _init_monitor_parameters(self, params_monitored,
