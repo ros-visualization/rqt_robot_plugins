@@ -38,7 +38,9 @@
   <run_depend>rqt_robot_steering</run_depend>
   <run_depend>rqt_runtime_monitor</run_depend>
   <run_depend>rqt_rviz</run_depend>
+<!-- Commented out since dependency (tf2_ros) can't be resolved yet on build farm.
   <run_depend>rqt_tf_tree</run_depend>
+-->
 
   <export>
     <metapackage/>
