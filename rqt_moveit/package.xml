@@ -3,8 +3,16 @@
   <name>rqt_moveit</name>
   <version>0.2.15</version>
   <description>
-   A rqt-based monitoring tool for <a href = "http://ros.org/wiki/moveit">
-   Moveit!</a> motion planner. This is still very experimental.
+   An rqt-based tool that assists monitoring tasks
+   for <a href = "http://ros.org/wiki/moveit"> Moveit!</a>
+   motion planner developers. Currently the following items are monitored<br />
+   if they are either running, exist or published:
+   <ul>
+   <li>Node: /move_group</li>
+   <li>Parameter: [/robot_description, /robot_description_semantic]</li>
+   <li>Topic: Following types are monitored. Published "names" are ignored.<br />
+       [sensor_msgs/PointCloud, /pointcloud2, sensor_msgs/PointCloud2,
+              sensor_msgs/Image, sensor_msgs/CameraInfo]</li>    
   </description>
 
   <maintainer email="130s@alumni.smu.edu">Isaac Isao Saito</maintainer>
