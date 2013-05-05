@@ -44,6 +44,7 @@ import rospkg
 #from rosnode import rosnode_ping, ROSNodeIOException
 #from rosnode import ROSNodeIOException
 import rospy
+import rostopic
 from rqt_topic.topic_widget import TopicWidget
 
 
@@ -233,18 +234,40 @@ class MoveitWidget(QWidget):
         a way to generalize these 2.
 
         @type signal: Signal(bool, str)
-        @param signal: emitting a name of the parameter that's found.
+        @param_name signal: emitting a name of the parameter that's found.
         @type params_monitored: str[]
         """
+
         while self._is_checking_params:
-            for param in params_monitored:
+            # self._is_checking_params only turns to false when the plugin
+            # shuts down.
+
+            is_rosmaster_running = False
+            has_param = False
+
+            for param_name in params_monitored:
                 try:
-                    has_param = rospy.has_param(param)
+                    # Checkif rosmaster is running or not.
+                    rostopic.get_topic_class('/rosout')
+                    is_rosmaster_running = True
+                except rostopic.ROSTopicIOException as e:
+                    is_rosmaster_running = has_param = False
+                    rospy.logwarn('Skipping to check parameter existence. ' +
+                                  'Is rosmaster running?')
+                    #TODO: Show warning on GUI
+                    pass
+
+                try:
+                    if is_rosmaster_running:
+                        # Only if rosmaster is running, check if the parameter
+                        # exists or not.
+                        has_param = rospy.has_param(param_name)
                 except rospy.exceptions.ROSException as e:
                     self.sig_sysmsg.emit(
                          'Exception upon rospy.has_param {}'.format(e.message))
-                signal.emit(has_param, param)
-                rospy.logdebug('check_param_alive: {}'.format(param))
+                signal.emit(has_param, param_name)
+                rospy.loginfo('has_param {}, check_param_alive: {}'.format(
+                                                      has_param, param_name))
             time.sleep(self._refresh_rate)
 
     def _update_output_parameters(self, has_param, param_name):
