@@ -45,6 +45,7 @@ import rospkg
 #from rosnode import ROSNodeIOException
 import rospy
 import rostopic
+from rqt_py_common.rqt_roscomm_util import RqtRoscommUtil
 from rqt_topic.topic_widget import TopicWidget
 
 
@@ -242,20 +243,10 @@ class MoveitWidget(QWidget):
             # self._is_checking_params only turns to false when the plugin
             # shuts down.
 
-            is_rosmaster_running = False
             has_param = False
 
             for param_name in params_monitored:
-                try:
-                    # Checkif rosmaster is running or not.
-                    rostopic.get_topic_class('/rosout')
-                    is_rosmaster_running = True
-                except rostopic.ROSTopicIOException as e:
-                    is_rosmaster_running = has_param = False
-                    rospy.logwarn('Skipping to check parameter existence. ' +
-                                  'Is rosmaster running?')
-                    #TODO: Show warning on GUI
-                    pass
+                is_rosmaster_running = RqtRoscommUtil.is_roscore_running()
 
                 try:
                     if is_rosmaster_running:
