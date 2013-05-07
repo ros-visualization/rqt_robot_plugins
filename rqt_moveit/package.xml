@@ -11,8 +11,8 @@
    <li>Node: /move_group</li>
    <li>Parameter: [/robot_description, /robot_description_semantic]</li>
    <li>Topic: Following types are monitored. Published "names" are ignored.<br />
-       [sensor_msgs/PointCloud, /pointcloud2, sensor_msgs/PointCloud2,
-              sensor_msgs/Image, sensor_msgs/CameraInfo]</li>
+       [sensor_msgs/PointCloud, sensor_msgs/PointCloud2,
+        sensor_msgs/Image, sensor_msgs/CameraInfo]</li>
    </ul>
    Since this package is made not by Moveit! development team (although with
    assistance from the them), please post issue reports to the designated 
