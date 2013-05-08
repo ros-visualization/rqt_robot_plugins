@@ -141,6 +141,12 @@ class NavViewWidget(QWidget):
                 self.polygons.append(topic_name)
                 self._nav_view.add_polygon(topic_name)
 
+    def save_settings(self, plugin_settings, instance_settings):
+        self._nav_view.save_settings(plugin_settings, instance_settings)
+
+    def restore_settings(self, plugin_settings, instance_settings):
+        self._nav_view.restore_settings(plugin_settings, instance_settings)
+
 
 class NavView(QGraphicsView):
     map_changed = Signal()
