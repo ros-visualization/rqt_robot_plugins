@@ -519,6 +519,20 @@ class RobotMonitorWidget(AbstractStatusWidget):
                                                       seconds_string))
             self._is_stale = False
 
+        self._update_background_color()
+
+    def _update_background_color(self):
+        if self._is_stale:
+            color = "background-color:gray;"
+        else:
+            color = "background-color:white;"
+        self.tree_all_devices.setStyleSheet(color)
+        self.tree_all_devices.setAlternatingRowColors(not self._is_stale)
+        self.warn_flattree.setStyleSheet(color)
+        self.warn_flattree.setAlternatingRowColors(not self._is_stale)
+        self.err_flattree.setStyleSheet(color)
+        self.err_flattree.setAlternatingRowColors(not self._is_stale)
+
     def shutdown(self):
         """
         This needs to be called whenever this class terminates.
