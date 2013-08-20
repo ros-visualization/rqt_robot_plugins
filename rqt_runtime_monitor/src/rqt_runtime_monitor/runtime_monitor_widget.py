@@ -297,10 +297,11 @@ class RuntimeMonitorWidget(QWidget):
                 else:
                     self._error_node.removeChild(item.tree_node)
                 del self._name_to_item[item.status.name]
+            self._update_root_labels()
+            self.update()
+            event.accept()
         else:
-            event.Skip()
-        self._update_root_labels()
-        self.update()
+            event.ignore()
 
     def _on_timer(self):
         for name, item in self._name_to_item.iteritems():
