@@ -38,8 +38,6 @@ from python_qt_binding.QtGui import QIcon, QLabel
 from .util import IconHelper
 
 class BatteryDashWidget(QLabel):
-    
-    state_changed = Signal(int)
     """
     A Widget which displays incremental battery state, including a status tip.
     To use this widget simply call :func:`update_perc` and :func:`update_time` to change the displayed charge percentage and time remaining, respectively.
@@ -47,6 +45,8 @@ class BatteryDashWidget(QLabel):
     :param name: The name of this widget
     :type name: str
     """
+    state_changed = Signal(int)
+
     def __init__(self, name='Battery', icons=None, charge_icons=None, icon_paths=None, suppress_overlays=False):
         super(BatteryDashWidget, self).__init__()
         if icons == None:
@@ -70,23 +70,23 @@ class BatteryDashWidget(QLabel):
         self.state_changed.connect(self._update_state)
         self.update_perc(0)
         self.update_time(0)
-    
+
     def _update_state(self, state):
         if self._charging:
             self.setPixmap(self._charge_icons[state].pixmap(QSize(60, 100)))
         else:
             self.setPixmap(self._icons[state].pixmap(QSize(60, 100)))
-    
+
     @property
     def state(self):
         """
         Read-only accessor for the widgets current state.
         """
         return self.__state
-    
+
     def set_charging(self, value):
         self._charging = value
-    
+
     def update_perc(self, val):
         """Update the displayed battery percentage.
         The default implementation of this method displays in 20% increments
@@ -95,7 +95,7 @@ class BatteryDashWidget(QLabel):
         :type val: int
         """
         self.update_state(round(val / 20.0))
-    
+
     def update_state(self, state):
         """
         Set the state of this button.
@@ -111,7 +111,7 @@ class BatteryDashWidget(QLabel):
             self.state_changed.emit(self.__state)
         else:
             raise IndexError("%s update_state received invalid state: %s" % (self._name, state))
-    
+
     def update_time(self, value):
         try:
             fval = float(value)
