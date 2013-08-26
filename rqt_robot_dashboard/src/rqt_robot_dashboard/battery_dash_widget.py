@@ -40,7 +40,8 @@ from .util import IconHelper
 class BatteryDashWidget(QLabel):
     """
     A Widget which displays incremental battery state, including a status tip.
-    To use this widget simply call :func:`update_perc` and :func:`update_time` to change the displayed charge percentage and time remaining, respectively.
+    To use this widget simply call :func:`update_perc` and :func:`update_time`
+    to change the displayed charge percentage and time remaining, respectively.
 
     :param name: The name of this widget
     :type name: str
@@ -88,9 +89,10 @@ class BatteryDashWidget(QLabel):
         self._charging = value
 
     def update_perc(self, val):
-        """Update the displayed battery percentage.
+        """
+        Update the displayed battery percentage.
         The default implementation of this method displays in 20% increments
-        
+
         :param val: The new value to be displayed.
         :type val: int
         """
@@ -100,9 +102,9 @@ class BatteryDashWidget(QLabel):
         """
         Set the state of this button.
         This will also update the icon for the button based on the ``self._icons`` list
-        
+
         :raises IndexError: If state is not a proper index to ``self._icons``
-        
+
         :param state: The state to set.
         :type state: int
         """
