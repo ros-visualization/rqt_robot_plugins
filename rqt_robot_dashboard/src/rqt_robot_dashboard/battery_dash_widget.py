@@ -30,39 +30,67 @@
 # ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from .icon_tool_button import IconToolButton
 
+import os
+import rospkg
+from python_qt_binding.QtCore import Signal, QSize
+from python_qt_binding.QtGui import QIcon, QLabel
+from .util import IconHelper
 
-class BatteryDashWidget(IconToolButton):
+class BatteryDashWidget(QLabel):
     """
     A Widget which displays incremental battery state, including a status tip.
-    To use this widget simply call :func:`update_perc` and :func:`update_time` to change the displayed charge percentage and time remaining, respectively.
+    To use this widget simply call :func:`update_perc` and :func:`update_time`
+    to change the displayed charge percentage and time remaining, respectively.
 
     :param name: The name of this widget
     :type name: str
     """
-    def __init__(self, name='Battery', icons=None, charge_icons=None, icon_paths=None):
+    state_changed = Signal(int)
+
+    def __init__(self, name='Battery', icons=None, charge_icons=None, icon_paths=None, suppress_overlays=False):
+        super(BatteryDashWidget, self).__init__()
         if icons == None:
             icons = []
             charge_icons = []
             for x in range(6):
                 icons.append(['ic-battery-%s.svg' % (x * 20)])
                 charge_icons.append(['ic-battery-charge-%s.svg' % (x * 20)])
-        super(BatteryDashWidget, self).__init__(name, icons, charge_icons, icon_paths=icon_paths)
-        self.setEnabled(False)
-
-        self._charge_icons = self._clicked_icons
-        self.setStyleSheet('QToolButton:disabled {}')
-
+        icon_paths = (icon_paths if icon_paths else []) + [['rqt_robot_dashboard', 'images']]
+        paths = []
+        for path in icon_paths:
+            paths.append(os.path.join(rospkg.RosPack().get_path(path[0]), path[1]))
+        self._icon_helper = IconHelper(paths, name)
+        converted_icons = self._icon_helper.set_icon_lists(icons, charge_icons, suppress_overlays)
+        self._icons = converted_icons[0]
+        self._charge_icons = converted_icons[1]
+        self._name = name
         self._charging = False
-
+        self.__state = 0
+        self.setMargin(5)
+        self.state_changed.connect(self._update_state)
         self.update_perc(0)
+        self.update_time(0)
+
+    def _update_state(self, state):
+        if self._charging:
+            self.setPixmap(self._charge_icons[state].pixmap(QSize(60, 100)))
+        else:
+            self.setPixmap(self._icons[state].pixmap(QSize(60, 100)))
+
+    @property
+    def state(self):
+        """
+        Read-only accessor for the widgets current state.
+        """
+        return self.__state
 
     def set_charging(self, value):
         self._charging = value
 
     def update_perc(self, val):
-        """Update the displayed battery percentage.
+        """
+        Update the displayed battery percentage.
         The default implementation of this method displays in 20% increments
 
         :param val: The new value to be displayed.
@@ -70,15 +98,25 @@ class BatteryDashWidget(IconToolButton):
         """
         self.update_state(round(val / 20.0))
 
-    def _update_state(self, state):
-        if self._charging:
-            self.setIcon(self._charge_icons[state])
+    def update_state(self, state):
+        """
+        Set the state of this button.
+        This will also update the icon for the button based on the ``self._icons`` list
+
+        :raises IndexError: If state is not a proper index to ``self._icons``
+
+        :param state: The state to set.
+        :type state: int
+        """
+        if 0 <= state and state < len(self._icons):
+            self.__state = state
+            self.state_changed.emit(self.__state)
         else:
-            self.setIcon(self._icons[state])
+            raise IndexError("%s update_state received invalid state: %s" % (self._name, state))
 
     def update_time(self, value):
         try:
             fval = float(value)
-            self.setToolTip("%s: %.2f%% remaining" % (self.name, fval))
+            self.setToolTip("%s: %.2f%% remaining" % (self._name, fval))
         except ValueError:
-            self.setToolTip("%s: %s%% remaining" % (self.name, value))
+            self.setToolTip("%s: %s%% remaining" % (self._name, value))
