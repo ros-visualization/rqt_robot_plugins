@@ -43,7 +43,6 @@ from rqt_gui_py.plugin import Plugin
 class RobotSteering(Plugin):
 
     slider_factor = 1000.0
-    zero_cmd_sent
 
     def __init__(self, context):
         super(RobotSteering, self).__init__(context)
@@ -135,7 +134,7 @@ class RobotSteering(Plugin):
         self._update_parameter_timer = QTimer(self)
         self._update_parameter_timer.timeout.connect(self._on_parameter_changed)
         self._update_parameter_timer.start(100)
-        zero_cmd_sent = False
+        self.zero_cmd_sent = False
 
     @Slot(str)
     def _on_topic_changed(self, topic):
