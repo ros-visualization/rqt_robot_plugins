@@ -43,6 +43,7 @@ from rqt_gui_py.plugin import Plugin
 class RobotSteering(Plugin):
 
     slider_factor = 1000.0
+    zero_cmd_sent = False
 
     def __init__(self, context):
         super(RobotSteering, self).__init__(context)
@@ -208,8 +209,17 @@ class RobotSteering(Plugin):
         twist.angular.x = 0
         twist.angular.y = 0
         twist.angular.z = z_angular
-        #print(twist)
-        self._publisher.publish(twist)
+        
+        # Only send the zero command once so other devices can take control
+        if z_angular == x_linear == 0:
+          if not self.zero_cmd_sent:
+            self.zero_cmd_sent = True
+            self._publisher.publish(twist)
+        else:
+          self.zero_cmd_sent = False
+          self._publisher.publish(twist)
+          
+          
 
     def _unregister_publisher(self):
         if self._publisher is not None:
