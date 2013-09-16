@@ -211,14 +211,13 @@ class RobotSteering(Plugin):
         twist.angular.z = z_angular
 
         # Only send the zero command once so other devices can take control
-        if z_angular == x_linear == 0:
+        if x_linear == 0 and z_angular == 0:
           if not self.zero_cmd_sent:
             self.zero_cmd_sent = True
             self._publisher.publish(twist)
         else:
           self.zero_cmd_sent = False
           self._publisher.publish(twist)
-
 
     def _unregister_publisher(self):
         if self._publisher is not None:
