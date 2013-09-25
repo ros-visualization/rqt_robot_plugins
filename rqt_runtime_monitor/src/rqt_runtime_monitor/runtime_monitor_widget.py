@@ -86,7 +86,7 @@ class RuntimeMonitorWidget(QWidget):
         self._ok_node = QTreeWidgetItem(self.tree_widget.invisibleRootItem(), ['Ok (0)'])
         self._ok_node.setIcon(0, self._ok_icon)
         self.tree_widget.addTopLevelItem(self._ok_node)
-        self.tree_widget.itemSelectionChanged.connect(self._on_item_selected)
+        self.tree_widget.itemSelectionChanged.connect(self._refresh_selection)
         self.keyPressEvent = self._on_key_press
 
         self._name_to_item = {}
@@ -179,6 +179,7 @@ class RuntimeMonitorWidget(QWidget):
 
         self._update_root_labels()
         self.update()
+        self._refresh_selection()
 
     def _update_item(self, item, status, was_selected, stamp):
         change_parent = False
@@ -277,7 +278,7 @@ class RuntimeMonitorWidget(QWidget):
 
         self.html_browser.setHtml(s.getvalue())
 
-    def _on_item_selected(self):
+    def _refresh_selection(self):
         current_item = self.tree_widget.selectedItems()
         if current_item is not None:
             self._fillout_info(current_item[0])
