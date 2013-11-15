@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 2.8.3)
 project(rqt_rviz)
 # Load catkin and all dependencies required for this package
+
+find_package(Boost REQUIRED COMPONENTS program_options)
+include_directories(${Boost_INCLUDE_DIRS})
+
 find_package(catkin REQUIRED COMPONENTS rqt_gui rqt_gui_cpp rviz)
 catkin_package(	
 	INCLUDE_DIRS ${rqt_rviz_INCLUDE_DIRECTORIES}
