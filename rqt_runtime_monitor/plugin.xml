@@ -4,9 +4,14 @@
       A Python GUI plugin for displaying diagnostics topics.
     </description>
     <qtgui>
+      <group>
+        <label>Robot Tools</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to robot tools.</statustip>
+      </group>
       <label>Runtime Monitor</label>
       <icon type="theme">appointment-soon</icon>
-      <statustip>A Python GUI plugin for displaying diagnostics topics.</statustip>
+      <statustip>A Python GUI plugin for displaying diagnostic information.</statustip>
     </qtgui>
   </class>
 </library>

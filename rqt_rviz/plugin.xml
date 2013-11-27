@@ -4,6 +4,11 @@
       A GUI plugin version of rviz.
     </description>
     <qtgui>
+      <group>
+        <label>Visualization</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to visualization.</statustip>
+      </group>
       <label>RViz</label>
       <icon type="theme">image-x-generic</icon>
       <statustip>A GUI plugin version of rviz</statustip>

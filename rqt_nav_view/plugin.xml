@@ -4,6 +4,11 @@
     Display for navigation.
     </description>
     <qtgui>
+      <group>
+        <label>Visualization</label>
+        <icon type="theme">folder</icon>
+        <statustip>Plugins related to visualization.</statustip>
+      </group>
       <label>Navigation Viewer</label>
       <icon type="theme">video-display</icon>
       <statustip>Navigation Viewer</statustip>
