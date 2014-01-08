@@ -2,6 +2,10 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add groups for rqt plugins (`ros-visualization/rqt_common_plugins#167 <https://github.com/ros-visualization/rqt_common_plugins/issues/167>`_)
+
 0.3.1 (2013-10-09)
 ------------------
 * fix refresh of html display for new messages (`#49 <https://github.com/ros-visualization/rqt_robot_plugins/issues/49>`_)
