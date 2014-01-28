@@ -2,8 +2,8 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.3 (2014-01-28)
+------------------
 * improve usability: fix selecting items, maintain current scroll position (`#59 <https://github.com/ros-visualization/rqt_robot_plugins/issues/59>`_)
 
 0.3.2 (2014-01-08)
