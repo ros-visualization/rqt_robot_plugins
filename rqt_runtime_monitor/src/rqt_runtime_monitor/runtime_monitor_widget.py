@@ -169,7 +169,7 @@ class RuntimeMonitorWidget(QWidget):
                 was_selected = False
                 if (self._name_to_item.has_key(status.name)):
                     item = self._name_to_item[status.name]
-                    if self.tree_widget.selectedItems() != [] and self.tree_widget.selectedItems()[0] == item:
+                    if self.tree_widget.isItemSelected(item.tree_node):
                         was_selected = True
                     if (item.status.level == DiagnosticStatus.ERROR and status.level != DiagnosticStatus.ERROR):
                         had_errors = True
@@ -220,7 +220,7 @@ class RuntimeMonitorWidget(QWidget):
             parent_node.sortChildren(0, Qt.AscendingOrder)
 
             if (was_selected):
-                item.tree_node.setSelected(True)
+                self.tree_widget.setCurrentItem(item.tree_node)
 
         else:
             item.tree_node.setText(0, status.name + ": " + status.message)
