@@ -17,6 +17,7 @@
 
   <buildtool_depend>catkin</buildtool_depend>
 
+  <build_depend>boost</build_depend>
   <build_depend>pluginlib</build_depend>
   <build_depend>rqt_gui</build_depend>
   <build_depend>rqt_gui_cpp</build_depend>
