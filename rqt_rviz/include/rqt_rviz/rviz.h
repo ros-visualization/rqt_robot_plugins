@@ -58,6 +58,7 @@ public:
   virtual bool eventFilter(QObject* watched, QEvent* event);
 
 protected:
+  void parseArguments();
 
   qt_gui_cpp::PluginContext* context_;
 
@@ -65,6 +66,8 @@ protected:
 
   Ogre::Log* log_;
 
+  bool hide_menu_;
+  std::string display_config_;
 };
 
 }
