@@ -2,6 +2,10 @@
 Changelog for package rqt_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* add menu hiding and config as command-line args (`#62 <https://github.com/ros-visualization/rqt_robot_plugins/pull/62>`_)
+
 0.3.3 (2014-01-28)
 ------------------
 

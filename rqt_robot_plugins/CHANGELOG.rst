@@ -2,6 +2,9 @@
 Changelog for package rqt_robot_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.3.3 (2014-01-28)
 ------------------
 
