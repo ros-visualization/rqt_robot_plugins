@@ -197,8 +197,8 @@ class NavView(QGraphicsView):
         for poly in polygons:
             self.add_polygon(poly)
 
-        self._pose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped)
-        self._goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped)
+        self._pose_pub = rospy.Publisher('/initialpose', PoseWithCovarianceStamped, queue_size=100)
+        self._goal_pub = rospy.Publisher('/move_base_simple/goal', PoseStamped, queue_size=100)
 
         self.setScene(self._scene)
 
