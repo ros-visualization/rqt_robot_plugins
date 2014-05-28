@@ -4,6 +4,7 @@ project(rqt_rviz)
 
 find_package(Boost REQUIRED COMPONENTS program_options)
 include_directories(${Boost_INCLUDE_DIRS})
+link_directories(${Boost_LIBRARY_DIRS})
 
 find_package(catkin REQUIRED COMPONENTS rqt_gui rqt_gui_cpp rviz)
 catkin_package(	
@@ -28,7 +29,7 @@ qt4_wrap_cpp(rqt_rviz_MOCS ${rqt_rviz_HDRS})
 
 include_directories(include ${catkin_INCLUDE_DIRS})
 add_library(${PROJECT_NAME} ${rqt_rviz_SRCS} ${rqt_rviz_MOCS})
-target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY})
+target_link_libraries(${PROJECT_NAME} ${catkin_LIBRARIES} ${QT_QTCORE_LIBRARY} ${QT_QTGUI_LIBRARY} ${Boost_LIBRARIES})
 
 find_package(class_loader)
 class_loader_hide_library_symbols(${PROJECT_NAME})
