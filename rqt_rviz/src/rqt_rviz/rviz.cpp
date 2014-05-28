@@ -129,14 +129,13 @@ void RViz::parseArguments()
   const QStringList& qargv = context_->argv();
 
   const int argc = qargv.count();
-  QByteArray argv_array[argc]; // storage for char arrays of args
   const char *argv[argc+1];
   argv[0] = ""; // dummy program name
 
   for (int i = 0; i < argc; ++i)
   {
-    argv_array[i] = qargv.at(i).toLocal8Bit();
-    argv[i+1] = argv_array[i].constData();
+    QByteArray arg = qargv.at(i).toLocal8Bit();
+    argv[i+1] = arg.constData();
   }
 
   po::variables_map vm;
