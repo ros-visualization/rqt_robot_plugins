@@ -2,6 +2,10 @@
 Changelog for package rqt_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix compilation on OS X (`#64 <https://github.com/ros-visualization/rqt_robot_plugins/issues/64>`_)
+
 0.3.4 (2014-05-07)
 ------------------
 * add menu hiding and config as command-line args (`#62 <https://github.com/ros-visualization/rqt_robot_plugins/pull/62>`_)
