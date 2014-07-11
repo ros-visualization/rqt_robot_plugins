@@ -2,6 +2,9 @@
 Changelog for package rqt_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.3.5 (2014-06-02)
 ------------------
 * fix compilation on OS X (`#64 <https://github.com/ros-visualization/rqt_robot_plugins/issues/64>`_)
