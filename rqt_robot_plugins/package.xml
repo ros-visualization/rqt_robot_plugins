@@ -16,7 +16,7 @@
      <li>rqt_robot_plugins (You're here!)</li>
     </ul>
   </description>
-  <maintainer email="isao.saito@mavs.uta.edu">Isaac Saito</maintainer>
+  <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
 
   <license>BSD</license>
 
@@ -25,7 +25,7 @@
   <url type="bugtracker">https://github.com/ros-visualization/rqt_robot_plugins/issues</url>
 
   <author>Dirk Thomas</author>
-  <author email="ablasdel@willowgarage.com">Aaron Blasdel</author>
+  <author>Aaron Blasdel</author>
   <author>Dorian Scholz</author>
   <author>Ze'ev Klapow</author>
   <author>Isaac Saito</author>

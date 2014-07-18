@@ -20,7 +20,7 @@
   </description>
 
   <maintainer email="130s@alumni.smu.edu">Isaac Isao Saito</maintainer>
-  <author email="isaito@willowgarage.com">Isaac Saito</author>
+  <author>Isaac Saito</author>
 
   <license>BSD</license>
   <url type="website">http://ros.org/wiki/rqt_moveit</url>
