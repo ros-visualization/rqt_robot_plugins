@@ -129,13 +129,18 @@ void RViz::parseArguments()
   const QStringList& qargv = context_->argv();
 
   const int argc = qargv.count();
+  
+  // temporary storage for args obtained from qargv - since each QByteArray
+  // owns its storage, we need to keep these around until we're done parsing
+  // args using boost::program_options
+  std::vector<QByteArray> argv_array;
   const char *argv[argc+1];
   argv[0] = ""; // dummy program name
 
   for (int i = 0; i < argc; ++i)
   {
-    QByteArray arg = qargv.at(i).toLocal8Bit();
-    argv[i+1] = arg.constData();
+    argv_array.push_back(qargv.at(i).toLocal8Bit());
+    argv[i+1] = argv_array[i].constData();
   }
 
   po::variables_map vm;
