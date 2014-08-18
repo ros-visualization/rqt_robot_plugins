@@ -2,8 +2,8 @@
 Changelog for package rqt_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.3.7 (2014-08-18)
+------------------
 * fix argument parsing (`#68 <https://github.com/ros-visualization/rqt_robot_plugins/issues/68>`_) (regression of 0.3.5)
 
 0.3.6 (2014-07-11)
