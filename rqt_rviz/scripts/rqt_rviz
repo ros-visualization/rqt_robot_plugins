@@ -16,4 +16,4 @@ def add_arguments(parser):
             help='A display config file (.rviz) to load')
 
 main = Main()
-sys.exit(main.main(sys.argv, standalone='rqt_rviz', plugin_argument_provider=add_arguments))
+sys.exit(main.main(sys.argv, standalone='rqt_rviz/RViz', plugin_argument_provider=add_arguments))
