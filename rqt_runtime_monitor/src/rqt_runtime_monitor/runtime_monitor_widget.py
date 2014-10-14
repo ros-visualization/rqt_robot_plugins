@@ -56,7 +56,7 @@ class TreeItem(QObject):
 
 
 class RuntimeMonitorWidget(QWidget):
-    def __init__(self, topic="/diagnostics"):
+    def __init__(self, topic="diagnostics"):
         super(RuntimeMonitorWidget, self).__init__()
         rp = rospkg.RosPack()
         ui_file = os.path.join(rp.get_path('rqt_runtime_monitor'), 'resource', 'runtime_monitor_widget.ui')
