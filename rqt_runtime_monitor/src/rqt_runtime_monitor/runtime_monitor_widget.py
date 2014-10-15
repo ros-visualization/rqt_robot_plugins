@@ -92,9 +92,10 @@ class RuntimeMonitorWidget(QWidget):
 
         self._subscriber = rospy.Subscriber(topic, DiagnosticArray, self._diagnostics_callback)
 
+        self._previous_ros_time = rospy.Time.now()
         self._timer = QTimer()
         self._timer.timeout.connect(self._on_timer)
-        self._timer.start(5000)
+        self._timer.start(1000)
 
         self._msg_timer = QTimer()
         self._msg_timer.timeout.connect(self._update_messages)
@@ -314,6 +315,9 @@ class RuntimeMonitorWidget(QWidget):
             event.ignore()
 
     def _on_timer(self):
+        if self._previous_ros_time + rospy.Duration(5) > rospy.Time.now():
+            return
+        self._previous_ros_time = rospy.Time.now()
         for name, item in self._name_to_item.iteritems():
             node = item.tree_node
             if (item != None):
@@ -332,15 +336,6 @@ class RuntimeMonitorWidget(QWidget):
 
     def set_new_errors_callback(self, callback):
         self._new_errors_callback = callback
-
-    def get_num_errors(self):
-        return self._error_node.childCount() + self._stale_node.childCount()
-
-    def get_num_warnings(self):
-        return self._warning_node.childCount()
-
-    def get_num_ok(self):
-        return self._ok_node.childCount()
 
     def _update_root_labels(self):
         self._stale_node.setText(0, "Stale (%s)" % (self._stale_node.childCount()))
