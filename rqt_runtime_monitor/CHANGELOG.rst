@@ -2,6 +2,12 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* avoid marking items as stale when using sim time (`#69 <https://github.com/ros-visualization/rqt_robot_plugins/issues/69>`_)
+* allow remapping diagnostics topic
+* update script to use full plugin name
+
 0.3.7 (2014-08-18)
 ------------------
 
