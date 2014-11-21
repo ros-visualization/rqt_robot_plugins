@@ -10,7 +10,7 @@
         <icon type="theme">folder</icon>
         <statustip>Plugins related to robot tools.</statustip>
       </group>
-      <label>Moveit! Monitor</label>
+      <label>Moveit! Monitor (experimental)</label>
       <icon type="theme">accessories-text-editor</icon>
       <statustip>GUI to support monitoring during Moveit! runtime.</statustip>
     </qtgui>
