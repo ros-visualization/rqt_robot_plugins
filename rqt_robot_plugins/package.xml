@@ -11,11 +11,12 @@
      <li><a href = "http://ros.org/wiki/rqt">rqt</a> - provides a container window
          where all rqt tools can be docked at. rqt plugin developers barely
          needs to pay attention.</li>
-     <li><a href = "http://ros.org/wiki/rqt_common_plugins">rqt_common_plugins</a> - 
+     <li><a href = "http://ros.org/wiki/rqt_common_plugins">rqt_common_plugins</a> -
          ROS backend tools suite that can be used on/off of robot runtime.</li>
      <li>rqt_robot_plugins (You're here!)</li>
     </ul>
   </description>
+  <maintainer email="ablasdel@gmail.com">Aaron Blasdel</maintainer>
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
 
   <license>BSD</license>
