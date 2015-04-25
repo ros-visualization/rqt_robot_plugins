@@ -3,7 +3,7 @@
   <version>0.4.0</version>
   <description>rqt_pose_view provides a GUI plugin for visualizing 3D poses.</description>
   <maintainer email="scholz@sim.tu-darmstadt.de">Dorian Scholz</maintainer>
-  <maintainer email="130s@2000.jukuin.keio.ac.jp">Isaac Saito</maintainer>
+  <maintainer email="ablasdel@gmail.com">Aaron Blasdel</maintainer>
 
   <license>BSD</license>
 
