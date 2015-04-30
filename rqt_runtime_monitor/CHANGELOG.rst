@@ -2,6 +2,9 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+
 0.4.0 (2014-11-05)
 ------------------
 * avoid marking items as stale when using sim time (`#69 <https://github.com/ros-visualization/rqt_robot_plugins/issues/69>`_)
