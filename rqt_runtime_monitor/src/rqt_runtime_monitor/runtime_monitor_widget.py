@@ -196,7 +196,7 @@ class RuntimeMonitorWidget(QWidget):
                 self._ok_node.removeChild(item.tree_node)
             elif (item.status.level == DiagnosticStatus.WARN):
                 self._warning_node.removeChild(item.tree_node)
-            elif (item.status.level == -1): 
+            elif (item.status.level == -1) or (item.status.level == 3):
                 self._stale_node.removeChild(item.tree_node)
             else: # ERROR
                 self._error_node.removeChild(item.tree_node)
@@ -205,7 +205,7 @@ class RuntimeMonitorWidget(QWidget):
                 parent_node = self._ok_node
             elif (status.level == DiagnosticStatus.WARN):
                 parent_node = self._warning_node
-            elif (status.level == -1):
+            elif (status.level == -1) or (status.level == 3):
                 parent_node = self._stale_node
             else: # ERROR
                 parent_node = self._error_node
@@ -238,7 +238,7 @@ class RuntimeMonitorWidget(QWidget):
             parent_node = self._ok_node
         elif (status.level == DiagnosticStatus.WARN):
             parent_node = self._warning_node
-        elif (status.level == -1):
+        elif (status.level == -1) or (status.level == 3):
             parent_node = self._stale_node
         else: # ERROR
             parent_node = self._error_node
@@ -303,7 +303,7 @@ class RuntimeMonitorWidget(QWidget):
                     self._ok_node.removeChild(item.tree_node)
                 elif (item.status.level == 1):
                     self._warning_node.removeChild(item.tree_node)
-                elif (item.status.level == -1):
+                elif (item.status.level == -1) or (item.status.level == 3):
                     self._stale_node.removeChild(item.tree_node)
                 else:
                     self._error_node.removeChild(item.tree_node)
