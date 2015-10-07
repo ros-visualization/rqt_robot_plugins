@@ -37,7 +37,6 @@
 
 #include <pluginlib/class_list_macros.h>
 #include <boost/program_options.hpp>
-
 #include <rqt_rviz/rviz.h>
 
 namespace rqt_rviz {
