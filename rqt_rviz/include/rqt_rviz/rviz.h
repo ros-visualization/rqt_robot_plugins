@@ -33,6 +33,7 @@
 #ifndef rqt_rviz__RViz_H
 #define rqt_rviz__RViz_H
 
+#include <ros/ros.h>
 #include <rqt_gui_cpp/plugin.h>
 #include <rviz/visualization_frame.h>
 #include <OGRE/OgreLog.h>
@@ -60,6 +61,8 @@ public:
 protected:
   void parseArguments();
 
+  boost::shared_ptr<ros::NodeHandle> _nh;
+
   qt_gui_cpp::PluginContext* context_;
 
   rviz::VisualizationFrame* widget_;
@@ -68,6 +71,8 @@ protected:
 
   bool hide_menu_;
   std::string display_config_;
+
+  std::string name_file_;
 };
 
 }

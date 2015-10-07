@@ -37,9 +37,7 @@
 
 #include <pluginlib/class_list_macros.h>
 #include <boost/program_options.hpp>
-
 #include <rqt_rviz/rviz.h>
-
 
 namespace rqt_rviz {
 
@@ -50,6 +48,8 @@ RViz::RViz()
   , log_(0)
   , hide_menu_(false)
 {
+  _nh = boost::shared_ptr<ros::NodeHandle>(new ros::NodeHandle(""));
+  _nh->getParam("rviz_file", name_file_);
   setObjectName("RViz");
 }
 
@@ -85,7 +85,7 @@ void RViz::initPlugin(qt_gui_cpp::PluginContext& context)
   menu_bar->setVisible(!hide_menu_);
   widget_->setMenuBar(menu_bar);
 
-  widget_->initialize(display_config_.c_str());
+  widget_->initialize(QString::fromStdString(name_file_));
 
   // disable quit action in menu bar
   QMenu* menu = 0;
