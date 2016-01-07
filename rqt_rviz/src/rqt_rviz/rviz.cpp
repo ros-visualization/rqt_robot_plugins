@@ -49,6 +49,7 @@ RViz::RViz()
   , widget_(0)
   , log_(0)
   , hide_menu_(false)
+  , ogre_log_(false)
 {
   setObjectName("RViz");
 }
@@ -75,7 +76,7 @@ void RViz::initPlugin(qt_gui_cpp::PluginContext& context)
     log_manager = new Ogre::LogManager();
   }
   QString filename = QString("rqt_rviz_ogre") + (context.serialNumber() > 1 ? QString::number(context.serialNumber()) : QString("")) + QString(".log");
-  log_ = log_manager->createLog(filename.toStdString().c_str(), false, false);
+  log_ = log_manager->createLog(filename.toStdString().c_str(), false, false, !ogre_log_);
 
   widget_ = new rviz::VisualizationFrame();
 
@@ -147,7 +148,8 @@ void RViz::parseArguments()
   po::options_description options;
   options.add_options()
     ("display-config,d", po::value<std::string>(), "")
-    ("hide-menu,m", "");
+    ("hide-menu,m", "")
+    ("ogre-log,l", "");
 
   try
   {
@@ -162,6 +164,11 @@ void RViz::parseArguments()
     if (vm.count("display-config"))
     {
       display_config_ = vm["display-config"].as<std::string>();
+    }
+
+    if (vm.count("ogre-log"))
+    {
+      ogre_log_ = true;
     }
   }
   catch (std::exception& e)

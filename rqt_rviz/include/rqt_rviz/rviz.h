@@ -68,6 +68,7 @@ protected:
 
   bool hide_menu_;
   std::string display_config_;
+  bool ogre_log_;
 };
 
 }
