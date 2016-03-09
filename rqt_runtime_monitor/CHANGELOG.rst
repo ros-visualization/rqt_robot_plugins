@@ -2,8 +2,8 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.4.3 (2016-03-08)
+------------------
 * STALE is defined for indigo and later
 * Contributors: Michael Ferguson
 
