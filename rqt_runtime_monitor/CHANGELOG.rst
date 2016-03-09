@@ -2,6 +2,11 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* STALE is defined for indigo and later
+* Contributors: Michael Ferguson
+
 0.4.2 (2015-07-24)
 ------------------
 * add support for stale state
