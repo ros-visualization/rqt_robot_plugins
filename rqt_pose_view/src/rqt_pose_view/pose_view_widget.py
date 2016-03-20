@@ -103,13 +103,13 @@ class PoseViewWidget(QWidget):
         self._gl_view.rotate((1, 0, 0), -45)
         self._gl_view.translate((0, -3, -15))
 
-    def message_callback(self, message):
-        if (type(message) is Quaternion) :
-            self._position = (0,0,0)
-            self._orientation = (message.x, message.y, message.z, message.w)
-        else :
-            self._position = (message.position.x, message.position.y, message.position.z)
-            self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
+    def message_callback_pose(self, message):
+        self._position = (message.position.x, message.position.y, message.position.z)
+        self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
+            
+    def message_callback_quaternion(self, message):
+        self._position = (0,0,0)
+        self._orientation = (message.x, message.y, message.z, message.w)
 
     def update_timeout(self):
         self._gl_view.makeCurrent()
@@ -255,7 +255,10 @@ class PoseViewWidget(QWidget):
 
     def subscribe_topic(self, topic_name):
         msg_class, self._topic_name, _ = get_topic_class(topic_name)
-        self._subscriber = rospy.Subscriber(self._topic_name, msg_class, self.message_callback)
-
+        if (msg_class.__name__ == 'Quaternion') :
+            self._subscriber = rospy.Subscriber(self._topic_name, msg_class, self.message_callback_quaternion)
+        else :
+            self._subscriber = rospy.Subscriber(self._topic_name, msg_class, self.message_callback_pose)
+            
     def shutdown_plugin(self):
         self.unregister_topic()
