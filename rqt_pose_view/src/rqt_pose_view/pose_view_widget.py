@@ -39,6 +39,7 @@ from python_qt_binding.QtGui import QAction, QMenu, QWidget
 import rospy
 from rostopic import get_topic_class
 from tf.transformations import quaternion_matrix, quaternion_about_axis
+from geometry_msgs.msg import Quaternion
 
 from OpenGL.GL import glBegin, glColor3f, glEnd, glLineWidth, glMultMatrixf, glTranslatef, glVertex3f, GL_LINES, GL_QUADS
 from .gl_widget import GLWidget
@@ -103,8 +104,12 @@ class PoseViewWidget(QWidget):
         self._gl_view.translate((0, -3, -15))
 
     def message_callback(self, message):
-        self._position = (message.position.x, message.position.y, message.position.z)
-        self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
+        if (type(message) is Quaternion) :
+            self._position = (0,0,0)
+            self._orientation = (message.x, message.y, message.z, message.w)
+        else :
+            self._position = (message.position.x, message.position.y, message.position.z)
+            self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
 
     def update_timeout(self):
         self._gl_view.makeCurrent()
