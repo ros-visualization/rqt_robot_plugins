@@ -39,7 +39,8 @@ import time
 
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
-from python_qt_binding.QtGui import QStandardItem, QStandardItemModel, QWidget
+from python_qt_binding.QtGui import QStandardItem, QStandardItemModel
+from python_qt_binding.QtWidgets import QWidget
 import rospkg
 #from rosnode import rosnode_ping, ROSNodeIOException
 #from rosnode import ROSNodeIOException
