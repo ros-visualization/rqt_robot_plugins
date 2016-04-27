@@ -2,8 +2,8 @@
 Changelog for package rqt_pose_view
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.0 (2016-04-27)
+------------------
 * Support Qt 5 (in Kinetic and higher) as well as Qt 4 (in Jade and earlier) (`#101 <https://github.com/ros-visualization/rqt_robot_plugins/pull/101>`_)
 * add support for visualizing Quaternion types (`#99 <https://github.com/ros-visualization/rqt_robot_plugins/pull/99>`_)
 
