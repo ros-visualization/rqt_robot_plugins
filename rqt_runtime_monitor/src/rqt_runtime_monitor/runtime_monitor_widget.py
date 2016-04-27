@@ -39,7 +39,8 @@ import threading
 
 from diagnostic_msgs.msg import DiagnosticArray, DiagnosticStatus
 from python_qt_binding import loadUi
-from python_qt_binding.QtGui import QIcon, QTreeWidgetItem, QWidget
+from python_qt_binding.QtGui import QIcon
+from python_qt_binding.QtWidgets import QTreeWidgetItem, QWidget
 from python_qt_binding.QtCore import Qt, QTimer, QObject
 import rospy
 
