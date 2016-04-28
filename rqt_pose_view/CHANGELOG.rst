@@ -2,6 +2,10 @@
 Changelog for package rqt_pose_view
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* use new gl_dependency to allow using the same code base for Qt 4 as well as Qt 5
+
 0.5.0 (2016-04-27)
 ------------------
 * Support Qt 5 (in Kinetic and higher) as well as Qt 4 (in Jade and earlier) (`#101 <https://github.com/ros-visualization/rqt_robot_plugins/pull/101>`_)
