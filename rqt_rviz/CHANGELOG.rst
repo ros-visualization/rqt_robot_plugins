@@ -2,8 +2,8 @@
 Changelog for package rqt_rviz
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.2 (2016-04-29)
+------------------
 * fix using Qt 5 when rqt uses it
 
 0.5.1 (2016-04-28)
