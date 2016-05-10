@@ -171,7 +171,7 @@ class RuntimeMonitorWidget(QWidget):
                 was_selected = False
                 if (self._name_to_item.has_key(status.name)):
                     item = self._name_to_item[status.name]
-                    if self.tree_widget.isItemSelected(item.tree_node):
+                    if item.tree_node.isSelected():
                         was_selected = True
                     if (item.status.level == DiagnosticStatus.ERROR and status.level != DiagnosticStatus.ERROR):
                         had_errors = True
