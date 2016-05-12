@@ -227,7 +227,11 @@ class NavView(QGraphicsView):
 
     def wheelEvent(self, event):
         event.ignore()
-        if event.delta() > 0:
+        try:
+            delta = event.angleDelta().y()
+        except AttributeError:
+            delta = event.delta()
+        if delta > 0:
             self.scale(1.15, 1.15)
         else:
             self.scale(0.85, 0.85)
