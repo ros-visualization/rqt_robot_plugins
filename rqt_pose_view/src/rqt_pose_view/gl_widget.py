@@ -134,7 +134,11 @@ class GLWidget(QGLWidget):
     def wheelEvent(self, event):
         # only zoom when no mouse buttons are pressed, to prevent interference with other user interactions
         if event.buttons() == Qt.NoButton:
-            d = float(event.delta()) / 200.0 * self._radius
+            try:
+                delta = event.angleDelta().y()
+            except AttributeError:
+                delta = event.delta()
+            d = float(delta) / 200.0 * self._radius
             self.translate([0.0, 0.0, d])
             self.updateGL()
             event.accept()
