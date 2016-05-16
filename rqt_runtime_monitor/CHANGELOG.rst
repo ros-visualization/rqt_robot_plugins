@@ -2,6 +2,10 @@
 Changelog for package rqt_runtime_monitor
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* fix Qt5 compatibility (`#104 <https://github.com/ros-visualization/rqt_robot_plugins/pull/104>`_)
+
 0.5.2 (2016-04-29)
 ------------------
 
