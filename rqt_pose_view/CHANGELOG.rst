@@ -2,8 +2,8 @@
 Changelog for package rqt_pose_view
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Forthcoming
------------
+0.5.3 (2016-05-16)
+------------------
 * fix mouse wheel delta in Qt 5 (`#105 <https://github.com/ros-visualization/rqt_robot_plugins/pull/105>`_)
 
 0.5.2 (2016-04-29)
