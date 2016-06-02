@@ -32,7 +32,7 @@
 
 import rospy
 from diagnostic_msgs.msg import DiagnosticStatus
-from python_qt_binding.QtCore import QMutex, QMutexLocker, QSize, QTimer, pyqtSignal
+from python_qt_binding.QtCore import QMutex, QMutexLocker, QSize, QTimer, Signal
 from rqt_robot_monitor.robot_monitor import RobotMonitorWidget
 from .icon_tool_button import IconToolButton
 
@@ -48,7 +48,7 @@ class MonitorDashWidget(IconToolButton):
     :param context: The plugin context to create the monitor in.
     :type context: qt_gui.plugin_context.PluginContext
     """
-    msg_trigger = pyqtSignal()
+    _msg_trigger = Signal()
 
     def __init__(self, context, icon_paths=[]):
         self._graveyard = []
@@ -87,11 +87,11 @@ class MonitorDashWidget(IconToolButton):
         self._stalled()
         self._plugin_settings = None
         self._instance_settings = None
-        self.msg_trigger.connect(self.handle_msg_trigger)   
+        self._msg_trigger.connect(self._handle_msg_trigger)   
 
     def toplevel_state_callback(self, msg):
         self._is_stale = False
-        self.msg_trigger.emit()
+        self._msg_trigger.emit()
 
         if self._top_level_state != msg.level:
             if (msg.level >= 2):
@@ -105,7 +105,7 @@ class MonitorDashWidget(IconToolButton):
                 self.setToolTip("Diagnostics: OK")
             self._top_level_state = msg.level
 
-    def handle_msg_trigger(self):
+    def _handle_msg_trigger(self):
         self._stall_timer.start(5000)
 
     def _stalled(self):
