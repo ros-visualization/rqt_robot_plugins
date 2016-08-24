@@ -39,6 +39,8 @@
 #include <boost/program_options.hpp>
 
 #include <rqt_rviz/rviz.h>
+#include <rviz/yaml_config_writer.h>
+#include <rviz/yaml_config_reader.h>
 
 
 namespace rqt_rviz {
@@ -187,6 +189,34 @@ bool RViz::eventFilter(QObject* watched, QEvent* event)
   }
 
   return QObject::eventFilter(watched, event);
+}
+
+void RViz::saveSettings(qt_gui_cpp::Settings& plugin_settings, qt_gui_cpp::Settings& instance_settings) const {
+  rviz::YamlConfigWriter writer;
+  rviz::Config conf;
+
+  widget_->save(conf);
+
+  instance_settings.setValue("config", writer.writeString(conf));
+
+  if(writer.error())
+  {
+    ROS_ERROR( "%s", qPrintable( writer.errorMessage() ));
+  }
+}
+
+void RViz::restoreSettings(const qt_gui_cpp::Settings& plugin_settings, const qt_gui_cpp::Settings& instance_settings) {
+  rviz::YamlConfigReader reader;
+  rviz::Config conf;
+
+  if(instance_settings.contains("config")) {
+    reader.readString(conf, instance_settings.value("config").toString());
+    widget_->load(conf);
+  }
+
+  if(reader.error()) {
+    ROS_ERROR( "%s", qPrintable( reader.errorMessage() ));
+  }
 }
 
 }
