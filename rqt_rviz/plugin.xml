@@ -9,7 +9,7 @@
         <icon type="theme">folder</icon>
         <statustip>Plugins related to visualization.</statustip>
       </group>
-      <label>RViz</label>
+      <label>RViz (experimental)</label>
       <icon type="theme">image-x-generic</icon>
       <statustip>A GUI plugin version of rviz</statustip>
     </qtgui>
