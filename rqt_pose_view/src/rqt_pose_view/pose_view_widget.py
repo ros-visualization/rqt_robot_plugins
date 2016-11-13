@@ -103,8 +103,40 @@ class PoseViewWidget(QWidget):
         self._gl_view.translate((0, -3, -15))
 
     def message_callback_pose(self, message):
-        self._position = (message.position.x, message.position.y, message.position.z)
-        self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
+        # check for embedded Pose
+        pose_idx = -1
+        try:
+            pose_idx = message._slot_types.index('geometry_msgs/Pose')
+        except ValueError:
+            pose_idx = -1
+
+        pose_name = ""
+        if pose_idx >= 0:
+            pose_name = message.__slots__[pose_idx]
+
+        # check for embedded Quaternion
+        quat_idx = -1
+        try:
+            quat_idx = message._slot_types.index('geometry_msgs/Quaternion')
+        except ValueError:
+            quat_idx = -1
+
+        quat_name = ""
+        if quat_idx >= 0:
+            quat_name = message.__slots__[quat_idx]
+
+        # extract position and orientation
+        if pose_name:
+            pose = getattr(message, pose_name)
+            self._position = (pose.position.x, pose.position.y, pose.position.z)
+            self._orientation = (pose.orientation.x, pose.orientation.y, pose.orientation.z, pose.orientation.w)
+        elif quat_name:
+            quat = getattr(message, quat_name)
+            self._position = (0, 0, 0)
+            self._orientation = (quat.x, quat.y, quat.z, quat.w)
+        else:
+            self._position = (message.position.x, message.position.y, message.position.z)
+            self._orientation = (message.orientation.x, message.orientation.y, message.orientation.z, message.orientation.w)
             
     def message_callback_quaternion(self, message):
         self._position = (0, 0, 0)
