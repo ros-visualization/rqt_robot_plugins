@@ -285,6 +285,7 @@ class PoseViewWidget(QWidget):
             return []
 
         for slot_name, slot_type in zip(msg_class.__slots__, msg_class._slot_types):
+            slot_type, _, _ = roslib.msgs.parse_type(slot_type)
             if roslib.msgs.is_valid_constant_type(slot_type):
                 continue
 
@@ -313,6 +314,7 @@ class PoseViewWidget(QWidget):
                 return path
 
             for slot_name, slot_type in zip(msg_class.__slots__, msg_class._slot_types):
+                slot_type, _, _ = roslib.msgs.parse_type(slot_type)
                 if roslib.msgs.is_valid_constant_type(slot_type):
                     continue
 
