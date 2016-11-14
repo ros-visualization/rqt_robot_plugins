@@ -33,6 +33,8 @@ import os
 import rospkg
 
 import roslib
+import roslib.msgs
+import roslib.message
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, QTimer, qWarning, Slot
 from python_qt_binding.QtWidgets import QAction, QMenu, QWidget
