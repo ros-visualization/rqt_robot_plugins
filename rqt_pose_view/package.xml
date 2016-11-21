@@ -24,6 +24,7 @@
   <run_depend>rostopic</run_depend>
   <run_depend>rqt_gui</run_depend>
   <run_depend>rqt_gui_py</run_depend>
+  <run_depend>rqt_py_common</run_depend>
   <run_depend>tf</run_depend>
 
   <export>

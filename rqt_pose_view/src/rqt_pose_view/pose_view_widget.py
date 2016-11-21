@@ -32,19 +32,18 @@ from __future__ import division
 import os
 import rospkg
 
-import roslib
-import roslib.msgs
-import roslib.message
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import Qt, QTimer, qWarning, Slot
 from python_qt_binding.QtWidgets import QAction, QMenu, QWidget
 
 import rospy
 from rostopic import get_topic_class
+from rqt_py_common.topic_helpers import find_slots_by_type_bfs
 from tf.transformations import quaternion_matrix, quaternion_about_axis
 from geometry_msgs.msg import Quaternion, Pose, Point
 
-from OpenGL.GL import glBegin, glColor3f, glEnd, glLineWidth, glMultMatrixf, glTranslatef, glVertex3f, GL_LINES, GL_QUADS
+from OpenGL.GL import glBegin, glColor3f, glEnd, glLineWidth, glMultMatrixf, glTranslatef, \
+    glVertex3f, GL_LINES, GL_QUADS
 from .gl_widget import GLWidget
 
 
@@ -57,9 +56,6 @@ class PoseViewWidget(QWidget):
         ui_file = os.path.join(rp.get_path('rqt_pose_view'), 'resource', 'PoseViewWidget.ui')
         loadUi(ui_file, self)
         self._plugin = plugin
-
-        point_slot_path = None
-        quaternion_slot_path = None
 
         self._position = (2.0, 2.0, 2.0)
         self._orientation = quaternion_about_axis(0.0, (1.0, 0.0, 0.0))
@@ -106,7 +102,7 @@ class PoseViewWidget(QWidget):
         self._gl_view.makeCurrent()
         self._gl_view.reset_view()
         self._gl_view.rotate((0, 0, 1), 45)
-        self._gl_view.rotate((1, 0, 0), -45)
+        self._gl_view.rotate((1, 0, 0), -65)
         self._gl_view.translate((0, -3, -15))
 
     def update_timeout(self):
@@ -120,7 +116,7 @@ class PoseViewWidget(QWidget):
         self._paintGLBox()
 
     def _paintGLBox(self):
-        # FIXME: disable translation based on user configuration
+        # FIXME: add user configurable setting to allow use of translation as well
         self._position = (2.0, 2.0, 2.0)  # Set fixed translation for now
 
         glTranslatef(*self._position)     # Translate Box
@@ -168,8 +164,8 @@ class PoseViewWidget(QWidget):
         glEnd()                           # Done Drawing The Quad
 
     def _paintGLGrid(self):
-        resolutionMillimeters = 1
-        griddedAreaSize = 100
+        resolution_millimeters = 1
+        gridded_area_size = 100
 
         glLineWidth(1.0)
 
@@ -177,23 +173,23 @@ class PoseViewWidget(QWidget):
 
         glColor3f(1.0, 1.0, 1.0)
 
-        glVertex3f(griddedAreaSize, 0, 0)
-        glVertex3f(-griddedAreaSize, 0, 0)
-        glVertex3f(0, griddedAreaSize, 0)
-        glVertex3f(0, -griddedAreaSize, 0)
+        glVertex3f(gridded_area_size, 0, 0)
+        glVertex3f(-gridded_area_size, 0, 0)
+        glVertex3f(0, gridded_area_size, 0)
+        glVertex3f(0, -gridded_area_size, 0)
 
-        numOfLines = int(griddedAreaSize / resolutionMillimeters)
+        num_of_lines = int(gridded_area_size / resolution_millimeters)
 
-        for i in range(numOfLines):
-            glVertex3f(resolutionMillimeters * i, -griddedAreaSize, 0)
-            glVertex3f(resolutionMillimeters * i, griddedAreaSize, 0)
-            glVertex3f(griddedAreaSize, resolutionMillimeters * i, 0)
-            glVertex3f(-griddedAreaSize, resolutionMillimeters * i, 0)
+        for i in range(num_of_lines):
+            glVertex3f(resolution_millimeters * i, -gridded_area_size, 0)
+            glVertex3f(resolution_millimeters * i, gridded_area_size, 0)
+            glVertex3f(gridded_area_size, resolution_millimeters * i, 0)
+            glVertex3f(-gridded_area_size, resolution_millimeters * i, 0)
 
-            glVertex3f(resolutionMillimeters * (-i), -griddedAreaSize, 0)
-            glVertex3f(resolutionMillimeters * (-i), griddedAreaSize, 0)
-            glVertex3f(griddedAreaSize, resolutionMillimeters * (-i), 0)
-            glVertex3f(-griddedAreaSize, resolutionMillimeters * (-i), 0)
+            glVertex3f(resolution_millimeters * (-i), -gridded_area_size, 0)
+            glVertex3f(resolution_millimeters * (-i), gridded_area_size, 0)
+            glVertex3f(gridded_area_size, resolution_millimeters * (-i), 0)
+            glVertex3f(-gridded_area_size, resolution_millimeters * (-i), 0)
 
         glEnd()
 
@@ -229,31 +225,31 @@ class PoseViewWidget(QWidget):
         if event.mimeData().hasText():
             topic_name = str(event.mimeData().text())
             if len(topic_name) == 0:
-                qWarning('Plot.dragEnterEvent(): event.mimeData() text is empty')
+                qWarning('PoseViewWidget.dragEnterEvent(): event.mimeData() text is empty')
                 return
         else:
             if not hasattr(event.source(), 'selectedItems') or len(event.source().selectedItems()) == 0:
-                qWarning('Plot.dragEnterEvent(): event.source() has no attribute selectedItems or length of selectedItems is 0')
+                qWarning('PoseViewWidget.dragEnterEvent(): event.source() has no attribute selectedItems or length of selectedItems is 0')
                 return
             item = event.source().selectedItems()[0]
             topic_name = item.data(0, Qt.UserRole)
 
             if topic_name is None:
-                qWarning('Plot.dragEnterEvent(): selectedItem has no UserRole data with a topic name')
+                qWarning('PoseViewWidget.dragEnterEvent(): selectedItem has no UserRole data with a topic name')
                 return
 
         # check for valid topic
         msg_class, self._topic_name, _ = get_topic_class(topic_name)
         if msg_class is None:
-            qWarning('Plot.dragEnterEvent(): No message class was found for topic "%s".' % topic_name)
+            qWarning('PoseViewWidget.dragEnterEvent(): No message class was found for topic "%s".' % topic_name)
             return
 
         # check for valid message class
         quaternion_slot_path, point_slot_path = self._get_slot_paths(msg_class)
 
         if quaternion_slot_path is None and point_slot_path is None:
-            qWarning('Plot.dragEnterEvent(): No Pose, Quaternion or Point data was found in "%s" on topic "%s".'
-                     % (msg_class, topic_name))
+            qWarning('PoseViewWidget.dragEnterEvent(): No Pose, Quaternion or Point data was found outside of arrays in "%s" on topic "%s".'
+                     % (msg_class._type, topic_name))
             return
 
         event.acceptProposedAction()
@@ -263,78 +259,50 @@ class PoseViewWidget(QWidget):
         if event.mimeData().hasText():
             topic_name = str(event.mimeData().text())
         else:
-            droped_item = event.source().selectedItems()[0]
-            topic_name = str(droped_item.data(0, Qt.UserRole))
+            dropped_item = event.source().selectedItems()[0]
+            topic_name = str(dropped_item.data(0, Qt.UserRole))
 
-        self.unregister_topic()
+        self._unregister_topic()
         self._subscribe_topic(topic_name)
 
-    def unregister_topic(self):
+    def _unregister_topic(self):
         if self._subscriber:
             self._subscriber.unregister()
 
     @staticmethod
-    def _find_slot_type_dfs(msg_class, search_class):
-        """
-        Search inside msg_class for the first slot with class search_class and return its path.
-        Uses a depth first search, so it will find the match in the first slot possible.
-
-        :param msg_class: The class to search in.
-        :param search_class: The class to search for.
-        :return: Path to the slot with search_class inside msg_class or None.
-        """
-        if msg_class == search_class:
+    def _make_path_list_from_path_string(path):
+        path = path.split('/')
+        if path == ['']:
             return []
-
-        for slot_name, slot_type in zip(msg_class.__slots__, msg_class._slot_types):
-            slot_type, _, _ = roslib.msgs.parse_type(slot_type)
-            if roslib.msgs.is_valid_constant_type(slot_type):
-                continue
-
-            slot_class = roslib.message.get_message_class(slot_type)
-            if slot_class is not None:
-                path = PoseViewWidget._find_slot_type_dfs(slot_class, search_class)
-                if path is not None:
-                    return [slot_name] + path
-
-        return None
+        return path
 
     @staticmethod
-    def _find_slot_type_bfs(msg_class, search_class):
-        """
-        Search inside msg_class for the first slot with class search_class and return its path.
-        Uses a breadth first search, so it will find the most shallow match.
-
-        :param msg_class: The class to search in.
-        :param search_class: The class to search for.
-        :return: Path to the slot with search_class inside msg_class or None.
-        """
-        queue = [(msg_class, [])]
-        while queue:
-            msg_class, path = queue.pop(0)
-            if msg_class == search_class:
-                return path
-
-            for slot_name, slot_type in zip(msg_class.__slots__, msg_class._slot_types):
-                slot_type, _, _ = roslib.msgs.parse_type(slot_type)
-                if roslib.msgs.is_valid_constant_type(slot_type):
-                    continue
-
-                slot_class = roslib.message.get_message_class(slot_type)
-                if slot_class is not None:
-                    queue.append((slot_class, path + [slot_name]))
-
-        return None
-
-    def _get_slot_paths(self, msg_class):
+    def _get_slot_paths(msg_class):
         # find first Pose in msg_class
-        pose_slot_path = self._find_slot_type_bfs(msg_class, Pose)
-        if pose_slot_path is not None:
-            return pose_slot_path + ['orientation'], pose_slot_path + ['position']
+        pose_slot_paths = find_slots_by_type_bfs(msg_class, Pose)
+        for path in pose_slot_paths:
+            # make sure the path does not contain an array, because we don't want to deal with empty arrays...
+            if '[' not in path:
+                path = PoseViewWidget._make_path_list_from_path_string(pose_slot_paths[0])
+                return path + ['orientation'], path + ['position']
 
         # if no Pose is found, find first Quaternion and Point
-        quaternion_slot_path = self._find_slot_type_bfs(msg_class, Quaternion)
-        point_slot_path = self._find_slot_type_bfs(msg_class, Point)
+        quaternion_slot_paths = find_slots_by_type_bfs(msg_class, Quaternion)
+        for path in quaternion_slot_paths:
+            if '[' not in path:
+                quaternion_slot_path = PoseViewWidget._make_path_list_from_path_string(path)
+                break
+        else:
+            quaternion_slot_path = None
+
+        point_slot_paths = find_slots_by_type_bfs(msg_class, Point)
+        for path in point_slot_paths:
+            if '[' not in path:
+                point_slot_path = PoseViewWidget._make_path_list_from_path_string(path)
+                break
+        else:
+            point_slot_path = None
+
         return quaternion_slot_path, point_slot_path
 
 
@@ -371,4 +339,4 @@ class PoseViewWidget(QWidget):
             self._position = (position.x, position.y, position.z)
 
     def shutdown_plugin(self):
-        self.unregister_topic()
+        self._unregister_topic()
