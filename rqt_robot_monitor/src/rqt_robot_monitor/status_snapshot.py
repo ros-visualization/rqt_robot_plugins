@@ -70,10 +70,10 @@ class StatusSnapshot(QTextEdit):
     def _write(self, k, v):
         # TODO(ahendrix): write these as a table rather than as text
         self.setFontWeight(75)
-        self.insertPlainText(str(k))
+        self.insertPlainText(unicode(k))
         # TODO(ahendrix): de-dupe trailing ':' here
         self.insertPlainText(': ')
 
         self.setFontWeight(50)
-        self.insertPlainText(str(v))
+        self.insertPlainText(unicode(v))
         self.insertPlainText('\n')

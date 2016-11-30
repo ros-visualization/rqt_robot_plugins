@@ -111,6 +111,14 @@ class Timeline(QObject):
         """
         self._have_messages = True
         self._last_message_time = rospy.get_time()
+        # convert UTF-8 strings into unicode
+        for status in msg.status:
+            status.name = status.name.decode('utf-8');
+            status.message = status.message.decode('utf-8');
+            status.hardware_id = status.hardware_id.decode('utf-8');
+            for value in status.values:
+                value.key = value.key.decode('utf-8')
+                value.value = value.value.decode('utf-8')
         if self.paused:
             self._paused_queue.append(msg)
         else:
