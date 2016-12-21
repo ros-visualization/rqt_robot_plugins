@@ -106,13 +106,6 @@ class MoveitWidget(QWidget):
         self._topic_monitor_thread = self._init_monitor_topics()
         self._topic_monitor_thread.start()
 
-        # Delegate GUI functionality to rqt_topic.TopicWidget.
-        # To connect signal in a widget to PluginContainerWidget.
-        # TODO: In this way, Signal from only one instance is hooked.
-        # Not a good design at all.
-        # FIXME connect sys msg for nodes.
-        # self.sig_sysmsg = self._widget_topic.sig_sysmsg
-
         # Init monitoring parameters.
         self._param_qitems = {}
         _col_names_paramtable = ['Param name', 'Found on Parameter Server?']
@@ -128,9 +121,7 @@ class MoveitWidget(QWidget):
         self._view_nodes.setModel(self._node_datamodel)
 
         node_monitor_thread = Thread(target=self._check_nodes_alive,
-                                           args=(self.sig_node,
-                                                 self._nodes_monitored,
-                                                 self._stop_event))
+                                     args=(self.sig_node, self._nodes_monitored, self._stop_event))
 
         self.sig_node.connect(self._update_output_nodes)
         return node_monitor_thread
@@ -176,9 +167,7 @@ class MoveitWidget(QWidget):
         @rtype: Thread
         """
         topic_monitor_thread = Thread(target=self._check_topics_alive,
-                                            args=(self.sig_topic,
-                                                  self._selected_topics,
-                                                  self._stop_event))
+                                      args=(self.sig_topic, self._selected_topics, self._stop_event))
         self.sig_topic.connect(self._update_output_topics)
         return topic_monitor_thread
 
@@ -227,9 +216,7 @@ class MoveitWidget(QWidget):
         self.sig_param.connect(self._update_output_parameters)
 
         param_check_thread = Thread(target=self._check_params_alive,
-                                          args=(self.sig_param,
-                                                self._params_monitored,
-                                                self._stop_event))
+                                    args=(self.sig_param, self._params_monitored, self._stop_event))
         return param_check_thread
 
     def _update_output_nodes(self, is_node_running, node_name):
@@ -354,8 +341,7 @@ class MoveitWidget(QWidget):
 
     def restore_settings(self, plugin_settings, instance_settings):
         if instance_settings.contains(self._SPLITTER_H):
-            self._splitter.restoreState(instance_settings.value(
-                                                             self._SPLITTER_H))
+            self._splitter.restoreState(instance_settings.value(self._SPLITTER_H))
         else:
             self._splitter.setSizes([100, 100, 200])
         pass
@@ -373,6 +359,7 @@ class MoveitWidget(QWidget):
             self._node_monitor_thread = None
             self._param_check_thread = None
             self._topic_monitor_thread = None
+
         except RuntimeError as e:
             rospy.logerr(e)
             raise e
