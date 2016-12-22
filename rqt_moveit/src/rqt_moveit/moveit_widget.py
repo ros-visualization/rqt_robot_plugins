@@ -353,6 +353,11 @@ class MoveitWidget(QWidget):
         """
         try:
             self._stop_event.set()
+
+            self._node_monitor_thread.join()
+            self._param_check_thread.join()
+            self._topic_monitor_thread.join()
+
             self._node_monitor_thread = None
             self._param_check_thread = None
             self._topic_monitor_thread = None
