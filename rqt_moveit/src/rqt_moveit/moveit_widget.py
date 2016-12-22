@@ -143,11 +143,9 @@ class MoveitWidget(QWidget):
         rosnode_dynamically_loaded = __import__('rosnode')
         while True:
             for nodename in nodes_monitored:
-                is_node_running = False
                 try:
                     registered_nodes = rosnode_dynamically_loaded.get_node_names()
-                    if nodename in registered_nodes:
-                        is_node_running = True
+                    is_node_running = nodename in registered_nodes
 
                 except rosnode_dynamically_loaded.ROSNodeIOException as e:
                     # TODO: Needs to be indicated on GUI
