@@ -37,7 +37,6 @@ import sys
 import threading
 import xmlrpclib
 
-from threading import Thread
 from python_qt_binding import loadUi
 from python_qt_binding.QtCore import QModelIndex, QTimer, Signal
 from python_qt_binding.QtGui import QStandardItem, QStandardItemModel
@@ -120,7 +119,7 @@ class MoveitWidget(QWidget):
         self._root_qitem = self._node_datamodel.invisibleRootItem()
         self._view_nodes.setModel(self._node_datamodel)
 
-        node_monitor_thread = Thread(target=self._check_nodes_alive,
+        node_monitor_thread = threading.Thread(target=self._check_nodes_alive,
                                      args=(self.sig_node, self._nodes_monitored, self._stop_event))
 
         self.sig_node.connect(self._update_output_nodes)
@@ -166,7 +165,7 @@ class MoveitWidget(QWidget):
         """
         @rtype: Thread
         """
-        topic_monitor_thread = Thread(target=self._check_topics_alive,
+        topic_monitor_thread = threading.Thread(target=self._check_topics_alive,
                                       args=(self.sig_topic, self._selected_topics, self._stop_event))
         self.sig_topic.connect(self._update_output_topics)
         return topic_monitor_thread
@@ -215,7 +214,7 @@ class MoveitWidget(QWidget):
 
         self.sig_param.connect(self._update_output_parameters)
 
-        param_check_thread = Thread(target=self._check_params_alive,
+        param_check_thread = threading.Thread(target=self._check_params_alive,
                                     args=(self.sig_param, self._params_monitored, self._stop_event))
         return param_check_thread
 
