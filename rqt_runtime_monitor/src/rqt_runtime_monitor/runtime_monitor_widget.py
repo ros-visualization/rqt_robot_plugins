@@ -32,7 +32,10 @@
 # POSSIBILITY OF SUCH DAMAGE.
 #
 import copy
-import cStringIO
+try:
+    from cStringIO import StringIO
+except ImportError:
+    from io import StringIO
 import os
 import rospkg
 import threading
@@ -169,7 +172,7 @@ class RuntimeMonitorWidget(QWidget):
         for message in messages:
             for status in message.status:
                 was_selected = False
-                if (self._name_to_item.has_key(status.name)):
+                if (status.name in self._name_to_item):
                     item = self._name_to_item[status.name]
                     if item.tree_node.isSelected():
                         was_selected = True
@@ -270,7 +273,7 @@ class RuntimeMonitorWidget(QWidget):
         scroll_value = self.html_browser.verticalScrollBar().value()
         status = item.status
 
-        s = cStringIO.StringIO()
+        s = StringIO()
 
         s.write("<html><body>")
         s.write("<b>Component</b>: %s<br>\n" % (status.name))
@@ -319,7 +322,7 @@ class RuntimeMonitorWidget(QWidget):
         if self._previous_ros_time + rospy.Duration(5) > rospy.Time.now():
             return
         self._previous_ros_time = rospy.Time.now()
-        for name, item in self._name_to_item.iteritems():
+        for name, item in self._name_to_item.items():
             node = item.tree_node
             if (item != None):
                 if (not item.mark):

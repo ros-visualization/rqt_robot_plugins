@@ -435,11 +435,11 @@ class NavView(QGraphicsView):
     def close(self):
         if self.map_sub:
             self.map_sub.unregister()
-        for p in self._paths.itervalues():
+        for p in self._paths.values():
             if p.sub:
                 p.sub.unregister()
 
-        for p in self._polygons.itervalues():
+        for p in self._polygons.values():
             if p.sub:
                 p.sub.unregister()
 
