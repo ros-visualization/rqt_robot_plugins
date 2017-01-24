@@ -2,6 +2,10 @@
 Changelog for package rqt_pose_view
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+Forthcoming
+-----------
+* search through message classes for Pose, Quaternion or Point data (`#117 <https://github.com/ros-visualization/rqt_robot_plugins/pull/117>`_)
+
 0.5.5 (2016-11-02)
 ------------------
 
