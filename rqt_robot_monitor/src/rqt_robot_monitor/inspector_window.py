@@ -102,12 +102,13 @@ class InspectorWindow(QWidget):
 
         rospy.logdebug('InspectorWin message_updated')
 
-        self.status = status
-        self.disp.write_status.emit(status)
+        if status:
+            self.status = status
+            self.disp.write_status.emit(status)
 
-        if self.disp.verticalScrollBar().maximum() < scroll_value:
-            scroll_value = self.disp.verticalScrollBar().maximum()
-        self.disp.verticalScrollBar().setValue(scroll_value)
+            if self.disp.verticalScrollBar().maximum() < scroll_value:
+                scroll_value = self.disp.verticalScrollBar().maximum()
+            self.disp.verticalScrollBar().setValue(scroll_value)
 
     def _take_snapshot(self):
         snap = StatusSnapshot(status=self.status)
