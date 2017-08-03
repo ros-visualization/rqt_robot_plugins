@@ -17,6 +17,7 @@
     </ul>
   </description>
   <maintainer email="ablasdel@gmail.com">Aaron Blasdel</maintainer>
+  <maintainer email="dhood@osrfoundation.org">D. Hood</maintainer>
   <maintainer email="dthomas@osrfoundation.org">Dirk Thomas</maintainer>
 
   <license>BSD</license>
