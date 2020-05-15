@@ -2,6 +2,12 @@
 Changelog for package rqt_robot_plugins
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
+0.5.8 (2020-05-14)
+------------------
+* Bump CMake version to avoid CMP0048 warning (`#124 <https://github.com/ros-visualization/rqt_robot_plugins/issues/124>`_)
+* Remove dirk-thomas as maintainer (`#125 <https://github.com/ros-visualization/rqt_robot_plugins/issues/125>`_)
+* Contributors: Alejandro Hernández Cordero, Shane Loretz
+
 0.5.7 (2017-04-27)
 ------------------
 
